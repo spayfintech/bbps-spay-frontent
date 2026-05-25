@@ -6,79 +6,157 @@ function BarChart({
   chartCategories,
   chartName,
   dataArray,
-  chartType = "bar",
+  chartType = "line",
 }) {
   const options = {
     chart: {
       id: chartId || "defaultChart",
-      toolbar: { show: false },
+
+      toolbar: {
+        show: false,
+      },
+
+      zoom: {
+        enabled: false,
+      },
+
+      sparkline: {
+        enabled: false,
+      },
     },
+
+    /* COLORS */
+    colors: ["#2563EB"],
+
+    /* SMOOTH LINE */
+    stroke: {
+      curve: "smooth",
+      width: 4,
+    },
+
+    /* GRID */
+    grid: {
+      borderColor: "#EEF2F7",
+      strokeDashArray: 5,
+      padding: {
+        left: 10,
+        right: 10,
+        top: 0,
+        bottom: 0,
+      },
+    },
+
+    /* X AXIS */
     xaxis: {
       categories: chartCategories || [],
+
       labels: {
-        show: false, // Hide text
+        show: true,
+
+        style: {
+          colors: "#64748B",
+          fontSize: "12px",
+          fontWeight: 500,
+        },
       },
+
       axisBorder: {
-        show: false, // Remove bottom border line
+        show: false,
       },
+
       axisTicks: {
-        show: false, // Remove small ticks
+        show: false,
       },
+
       tooltip: {
-        enabled: false, // Hide tooltip for x-axis
+        enabled: false,
       },
     },
+
+    /* Y AXIS */
     yaxis: {
       labels: {
-        style: { colors: "#555", fontSize: "13px" },
+        style: {
+          colors: "#94A3B8",
+          fontSize: "11px",
+        },
+
+        formatter: (value) => {
+          return `₹${value / 1000}k`;
+        },
       },
     },
-    grid: {
-      borderColor: "#e5e7eb",
-      strokeDashArray: 4,
-      xaxis: {
-        lines: { show: false }, // Remove grid lines along x-axis
+
+    /* MARKERS */
+    markers: {
+      size: 5,
+
+      colors: ["#2563EB"],
+
+      strokeColors: "#fff",
+
+      strokeWidth: 2,
+
+      hover: {
+        size: 7,
       },
     },
-    dataLabels: { enabled: false },
-    plotOptions: {
-      bar: {
-        borderRadius: 6,
-        horizontal: false,
-        columnWidth: "45%",
-        distributed: true,
+
+    /* AREA FILL */
+    fill: {
+      type: "gradient",
+
+      gradient: {
+        shadeIntensity: 1,
+
+        opacityFrom: 0.18,
+
+        opacityTo: 0.02,
+
+        stops: [0, 90, 100],
       },
     },
-    colors: ["#02d3f8ea"],
+
+    /* DATA LABELS */
+    dataLabels: {
+      enabled: false,
+    },
+
+    /* TOOLTIP */
     tooltip: {
-      enabled: true, // still show tooltip when hovering bars
       theme: "light",
-      style: { fontSize: "13px" },
+
+      style: {
+        fontSize: "12px",
+      },
+
+      y: {
+        formatter: (value) => `₹${value}`,
+      },
+    },
+
+    /* LEGEND */
+    legend: {
+      show: false,
     },
   };
 
-  const series = [{ name: chartName || "Series 1", data: dataArray || [] }];
+  const series = [
+    {
+      name: chartName || "Revenue",
+      data: dataArray || [],
+    },
+  ];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 p-5">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">
-          {chartName || "Bar Chart"}
-        </h3>
-        <span className="text-sm text-gray-500">{chartType.toUpperCase()}</span>
-      </div>
-
-      {/* Chart */}
-      <div className="w-full h-[350px]">
-        <Chart
-          options={options}
-          series={series}
-          type={chartType}
-          height="100%"
-          width="100%"
-        />
-      </div>
+    <div className="w-full h-full">
+      <Chart
+        options={options}
+        series={series}
+        type={chartType}
+        height={240}
+        width="100%"
+      />
     </div>
   );
 }
