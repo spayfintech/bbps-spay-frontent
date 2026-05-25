@@ -35,21 +35,25 @@ export const Layout = () => {
   }, [isMobileSidebarOpen]);
 
   return (
-    <div className={isMobile ? "" : "flex flex-col h-screen"}>
-      <Header
+    <div className="flex h-screen bg-[#F5F7FB] overflow-hidden">
+      {/* SIDEBAR */}
+      <Sidebar
         isMobile={isMobile}
+        isMobileSidebarOpen={isMobileSidebarOpen}
         setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+        sidebarRef={sidebarRef}
       />
 
-      <div className={isMobile ? "" : "flex grow overflow-hidden"}>
-        <Sidebar
+      {/* RIGHT SIDE */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* HEADER */}
+        <Header
           isMobile={isMobile}
-          isMobileSidebarOpen={isMobileSidebarOpen}
           setIsMobileSidebarOpen={setIsMobileSidebarOpen}
-          sidebarRef={sidebarRef}
         />
 
-        <main className="flex-1 bg-gray-100 overflow-y-auto p-3 md:p-6 xl:p-8 ">
+        {/* MAIN CONTENT */}
+        <main className="flex-1 overflow-y-auto p-6 xl:p-7 bg-[#F5F7FB]">
           <Outlet />
         </main>
       </div>
