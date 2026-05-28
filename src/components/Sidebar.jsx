@@ -249,7 +249,7 @@ export const Sidebar = ({
             </div>
 
             <h2 className="text-[24px] font-bold tracking-tight leading-none">
-              ₹78,450<span className="text-lg">.75</span>
+              ₹x,xxx<span className="text-lg">.xx</span>
             </h2>
           </div>
 
