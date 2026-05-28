@@ -5,6 +5,7 @@ import placeholderImg from "../../images/Spaylogo.jpg";
 import { useGet } from "../../hooks/useGet";
 import { usePost } from "../../hooks/usePost";
 import { useServicesContext } from "../../contexts/ServicesAuthContext";
+import MetroBillForm from "./MetroBillForm";
 import Select from "react-select";
 
 const SelectServiceBiller = () => {
@@ -28,7 +29,7 @@ const SelectServiceBiller = () => {
   const { data, loading: apiLoading } = useGet(endpoint);
 
   const { data: billerResponse, execute: fetchBillerInfo } = usePost(
-    `/bbps/biller-info${testEnv}/json`
+    `/bbps/biller-info${testEnv}/json`,
   );
   const handleCancel = (close) => {
     window.location.reload(true);
@@ -101,6 +102,9 @@ const SelectServiceBiller = () => {
     });
   }, [serviceList]);
 
+  if (service?.label === "Metro Bill") {
+    return <MetroBillForm />;
+  }
   return (
     <ServicesModalWrapper
       isOpen={isOpen}

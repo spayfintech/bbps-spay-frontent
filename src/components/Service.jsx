@@ -30,6 +30,7 @@ import {
   faRotate,
   faHandHoldingDollar,
   faReceipt,
+  faTrainSubway,
 } from "@fortawesome/free-solid-svg-icons";
 import { ModalProvider, useModal } from "../contexts/ServicesModalContext";
 import SelectServiceBiller from "./service/SelectServiceBiller";
@@ -41,7 +42,8 @@ import placeholderImg from "../images/logo.png";
 import { useGet } from "../hooks/useGet";
 import { useCookies } from "react-cookie";
 import {
-  ServicesAuthContext,useServicesContext
+  ServicesAuthContext,
+  useServicesContext,
 } from "../contexts/ServicesAuthContext";
 // --- Services List ---
 const servicesList = [
@@ -50,7 +52,7 @@ const servicesList = [
   { icon: faTv, label: "Cable TV" },
   { icon: faPeopleGroup, label: "Clubs and Associations" },
   { icon: faCreditCard, label: "Credit Card" },
-  { icon: faHandHoldingDollar, label: "Donation" },
+  // { icon: faHandHoldingDollar, label: "Donation" },
   { icon: faSatelliteDish, label: "DTH" },
   { icon: faCarCrash, label: "eChallan" },
   { icon: faGraduationCap, label: "Education Fees" },
@@ -61,7 +63,7 @@ const servicesList = [
   { icon: faBuilding, label: "Housing Society" },
   { icon: faShieldHalved, label: "Insurance" },
   { icon: faPhone, label: "Landline Postpaid" },
-  { icon: faMoneyBillWave, label: "Loan Repayment" },
+  // { icon: faMoneyBillWave, label: "Loan Repayment" },
   { icon: faGasPump, label: "LPG Gas" },
   { icon: faReceipt, label: "Mobile Postpaid" },
   { icon: faMobileScreenButton, label: "Mobile Prepaid" },
@@ -74,6 +76,7 @@ const servicesList = [
   { icon: faHouse, label: "Rental" },
   { icon: faRotate, label: "Subscription" },
   { icon: faDroplet, label: "Water" },
+  { icon: faTrainSubway, label: "Metro Bill" },
 ];
 // --- ServiceIcon Component ---
 const ServiceIcon = ({ item }) => {
@@ -103,14 +106,16 @@ const ServiceGridContent = () => {
   const userId = cookie?.user?.id;
 
   const { data, isLoading, error } = useGet(
-    userId ? `/user/${userId}/categories` : null
+    userId ? `/user/${userId}/categories` : null,
   );
 
   // ✅ Filter services only once here
   const filteredServices =
     data?.status && data.categories
-      ? servicesList.filter((service) =>
-          data.categories.includes(service.label)
+      ? servicesList.filter(
+          (service) =>
+            data.categories.includes(service.label) ||
+            service.label === "Metro Bill",
         )
       : [];
 
