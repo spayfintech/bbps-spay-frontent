@@ -15,6 +15,8 @@ import profilePic from "../images/avatars/1.png";
 
 import { ProfileSidebar } from "./ProfileSidebar";
 
+import logo from "../images/spaylogo.png";
+
 export const Header = ({ isMobile = false, setIsMobileSidebarOpen }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -26,6 +28,13 @@ export const Header = ({ isMobile = false, setIsMobileSidebarOpen }) => {
       <header className="h-[74px] bg-white border-b border-[#E8EDF5] flex items-center justify-between px-6 xl:px-8 shadow-[0_2px_12px_rgba(15,23,42,0.04)] relative z-30">
         {/* LEFT SIDE */}
         <div className="flex items-center gap-5">
+          <img
+            src={logo}
+            alt="SPay"
+            className="h-17 object-contain cursor-pointer"
+            onClick={() => navigate("/dashboard")}
+          />
+
           {/* MENU BUTTON */}
           <button
             onClick={() => {

@@ -1,19 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
-import placeholderImg from "../../images/Spaylogo.jpg";
+import placeholderImg from "../../images/Spaylogo.png";
 import { usePost } from "../../hooks/usePost";
 import { useServicesContext } from "../../contexts/ServicesAuthContext";
 
 const PlanDisplay = () => {
   const { isModalOpen, getModalData, openModal, closeModal } = useModal();
-  const {selectedBiller} = getModalData("plandisplay") || {};
+  const { selectedBiller } = getModalData("plandisplay") || {};
   const isOpen = isModalOpen("plandisplay");
-  const {forWhat}=useServicesContext();
-  
-  const testEnv=useMemo(()=>{
-    return forWhat
-  },[forWhat]);
+  const { forWhat } = useServicesContext();
+
+  const testEnv = useMemo(() => {
+    return forWhat;
+  }, [forWhat]);
 
   const { execute } = usePost(`/bbps/plan-pull${testEnv}/json`);
   const [plans, setPlans] = useState([]);
@@ -24,7 +24,6 @@ const PlanDisplay = () => {
     const fetchPlans = async () => {
       if (!selectedBiller.billerId) return;
 
-    
       const res = await execute(selectedBiller.billerId);
 
       setResponse(res);
@@ -32,7 +31,7 @@ const PlanDisplay = () => {
       // Use plans from API response
       if (res) {
         // console.log(res.data.decoded.planDetails);
-        
+
         setPlans(res.data.decoded.planDetails);
       } else if (Array.isArray(res)) {
         setPlans(res);
@@ -43,23 +42,23 @@ const PlanDisplay = () => {
   }, [selectedBiller]);
 
   const handleSelectPlan = (plan) => {
-  setSelectedPlan(plan);
+    setSelectedPlan(plan);
 
-  closeModal("plandisplay");  // closes first modal
+    closeModal("plandisplay"); // closes first modal
 
-  setTimeout(() => {
-    openModal("details", { 
-      selectedBiller: selectedBiller ,
-      plan:selectedPlan
-      // inputParams:inputParams
-    });
-  }, 150); // small delay ensures modal context updates
-};
+    setTimeout(() => {
+      openModal("details", {
+        selectedBiller: selectedBiller,
+        plan: selectedPlan,
+        // inputParams:inputParams
+      });
+    }, 150); // small delay ensures modal context updates
+  };
 
-const handleCancel=(close)=>{
+  const handleCancel = (close) => {
     window.location.reload(true);
     close();
-   }
+  };
   const handleNext = (close) => {
     if (!selectedPlan) {
       alert("Please select a plan first.");
@@ -76,9 +75,7 @@ const handleCancel=(close)=>{
     }, 250);
   };
 
-const planHandle=(item)=>{
-    
-}
+  const planHandle = (item) => {};
   const renderPlans = () => {
     if (!plans || plans.length === 0) {
       return <p>No plans available.</p>;
@@ -93,16 +90,15 @@ const planHandle=(item)=>{
       >
         <h3 className="font-bold text-lg">{item.planName || "Plan"}</h3>
 
-        <p className="text-sm text-gray-700">
-          Amount: ₹{item.amountInRupees }
-        </p>
+        <p className="text-sm text-gray-700">Amount: ₹{item.amountInRupees}</p>
 
         <p className="text-sm text-gray-700">
           Description: {item.planDesc || "N/A"}
         </p>
 
         <button
-          onClick={() => {console.log("");
+          onClick={() => {
+            console.log("");
           }}
           className="mt-3 px-4 py-2 bg-blue-600 text-white rounded"
         >
@@ -111,8 +107,8 @@ const planHandle=(item)=>{
       </div>
     ));
   };
-console.log("Plan Display");
-console.log(selectedBiller);
+  console.log("Plan Display");
+  console.log(selectedBiller);
 
   return (
     <ServicesModalWrapper
@@ -128,7 +124,7 @@ console.log(selectedBiller);
       renderFooter={(close) => (
         <>
           <button
-            onClick={()=>handleCancel(close)}
+            onClick={() => handleCancel(close)}
             className="px-3 py-1.5 bg-gray-300 rounded hover:bg-gray-400 text-sm"
           >
             Cancel

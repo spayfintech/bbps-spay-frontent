@@ -39,13 +39,23 @@ const AdminReport = () => {
     if (apiResponse) {
       const mappedData = apiResponse.map((item, index) => ({
         SrNo: index + 1,
-        userId: item.user_id || "-",
-        CustomerName: item.mobile_no || "N/A",
+        UserName: item.user_name || "-",
+        // UserId: item.user_id || "-",
+        Mobile: item.mobile_no || "-",
         Category: item.category || "-",
-        BillNumber: item.txnRefID || item.request_id || "-",
+        BillerName: item.biller_name || "-",
+        TransactionID: item.txnRefID || "-",
+        RequestID: item.request_id || "-",
+        Amount: item.amount || "-",
+        Charge: item.charge || "-",
+        Profit: item.profit || "-",
+        Description: item.description || "-",
+        OpeningBalance: item.opening_balance || "-",
+        ClosingBalance: item.closing_balance || "-",
         Status: item.txnStatus === "000" ? "Successful" : "Failed",
+
         Date: item.created_at
-          ? new Date(item.created_at).toLocaleDateString("en-GB")
+          ? new Date(item.created_at).toLocaleString()
           : "-",
       }));
 
@@ -56,12 +66,23 @@ const AdminReport = () => {
   }, [apiResponse]);
 
   /* ---------------- TABLE COLUMNS ---------------- */
+
   const columns = [
     { label: "Sr No", key: "SrNo" },
-    { label: "User Id", key: "userId" },
-    { label: "Customer", key: "CustomerName" },
+    { label: "User Name", key: "UserName" },
+    // { label: "User ID", key: "UserId" },
+    { label: "Mobile", key: "Mobile" },
     { label: "Category", key: "Category" },
-    { label: "Transaction ID", key: "BillNumber" },
+    { label: "Biller Name", key: "BillerName" },
+    { label: "Transaction ID", key: "TransactionID" },
+    { label: "Request ID", key: "RequestID" },
+    { label: "Amount", key: "Amount" },
+    { label: "Charge", key: "Charge" },
+    { label: "Profit", key: "Profit" },
+    { label: "Description", key: "Description" },
+    { label: "Opening Balance", key: "OpeningBalance" },
+    { label: "Closing Balance", key: "ClosingBalance" },
+
     {
       label: "Status",
       key: "Status",
@@ -77,6 +98,7 @@ const AdminReport = () => {
         </span>
       ),
     },
+
     { label: "Date", key: "Date" },
   ];
 
@@ -103,7 +125,8 @@ const AdminReport = () => {
           (!toDate || (itemDate && itemDate <= toDate)) &&
           (!filters.category || item.Category === filters.category) &&
           (!filters.status || item.Status === filters.status) &&
-          (!filters.billNumber || item.BillNumber.includes(filters.billNumber))
+          (!filters.billNumber ||
+            item.TransactionID?.includes(filters.billNumber))
         );
       });
 
@@ -144,20 +167,26 @@ const AdminReport = () => {
 
     const tableColumns = [
       "Sr No",
-      "User Id",
-      "Customer",
+      "User Name",
+      "User ID",
+      "Mobile",
       "Category",
+      "Biller",
       "Transaction ID",
+      "Amount",
       "Status",
       "Date",
     ];
 
     const tableRows = data.map((item) => [
       item.SrNo,
-      item.userId,
-      item.CustomerName,
+      item.UserName,
+      // item.UserId,
+      item.Mobile,
       item.Category,
-      item.BillNumber,
+      item.BillerName,
+      item.TransactionID,
+      item.Amount,
       item.Status,
       item.Date,
     ]);

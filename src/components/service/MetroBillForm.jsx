@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
-import placeholderImg from "../../images/Spaylogo.jpg";
+import placeholderImg from "../../images/Spaylogo.png";
 
 const MetroBillForm = () => {
   const { isModalOpen, closeModal } = useModal();
@@ -71,7 +71,7 @@ const MetroBillForm = () => {
         merchId: response.data.merchId,
         custEmail: formData.email,
         custMobile: formData.mobile,
-        returnUrl: "https://uatdashboard.spay.live/api/ntt/callback",
+        returnUrl: "https://dashboardbbps.spay.live/backend/api/ntt/callback",
       };
 
       new window.AtomPaynetz(options, "uat");

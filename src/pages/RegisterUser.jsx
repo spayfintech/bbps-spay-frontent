@@ -2,130 +2,21 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePost } from "../hooks/usePost";
 
+import logo from "../images/spaylogo.png";
+import LoginIllustration from "../images/hero.png";
+
+import ContactDetailsForm from "../components/register/ContactDetailsForm";
+import AadhaarForm from "../components/register/AadhaarForm";
+import BankAccountForm from "../components/register/BankAccountForm";
+import PanCardForm from "../components/register/PanCardForm";
+
 const RegisterUser = () => {
   const navigate = useNavigate();
 
   /* ---------------- API ---------------- */
   const { execute: regUser, loading: regLoading } = usePost(
-    "/register-new-merchant"
+    "/register-new-merchant",
   );
-  const { execute: sendPhoneOTP } = usePost("/send-mobile-otp");
-  const { execute: verifyPhoneOTP } = usePost("/verify-mobile-otp");
-  const { execute: sendEmailOTP } = usePost("/send-mail-otp");
-  const { execute: verifyEmailOTP } = usePost("/verify-mail-otp");
-
-  /* ---------------- FORM ---------------- */
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [option, setOption] = useState("Individual");
-
-  /* ---------------- PHONE OTP ---------------- */
-  const [phoneOtp, setPhoneOtp] = useState("");
-  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
-  const [phoneVerified, setPhoneVerified] = useState(false);
-
-  /* ---------------- EMAIL OTP ---------------- */
-  const [emailOtp, setEmailOtp] = useState("");
-  const [emailOtpSent, setEmailOtpSent] = useState(false);
-  const [emailVerified, setEmailVerified] = useState(false);
-
-  /* ---------------- UI ---------------- */
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  /* ---------------- PHONE OTP ---------------- */
-  const handleSendPhoneOTP = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (!phone) return setError("Enter phone number");
-
-    try {
-      setLoading(true);
-      await sendPhoneOTP({ mobile_no: phone });
-      setPhoneOtpSent(true);
-      setPhoneOtp("");
-      setSuccess("Phone OTP sent");
-    } catch {
-      setError("Failed to send phone OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyPhoneOTP = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (!/^\d{6}$/.test(phoneOtp)) {
-      setPhoneOtp("");
-      return setError("Phone OTP must be 6 digits");
-    }
-
-    try {
-      setLoading(true);
-      await verifyPhoneOTP({ mobile_no: phone, unique_otp: phoneOtp });
-      setPhoneVerified(true);
-      setSuccess("Phone verified");
-    } catch {
-      setPhoneOtp("");
-      setPhoneOtpSent(false); // ✅ allow resend
-      setError("Invalid phone OTP. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /* ---------------- EMAIL OTP ---------------- */
-  const handleSendEmailOTP = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (!email) return setError("Enter email address");
-
-    try {
-      setLoading(true);
-      await sendEmailOTP({ email });
-      setEmailOtpSent(true);
-      setEmailOtp("");
-      setSuccess("Email OTP sent");
-    } catch {
-      setError("Failed to send email OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyEmailOTP = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
-
-    if (!/^\d{6}$/.test(emailOtp)) {
-      setEmailOtp("");
-      return setError("Email OTP must be 6 digits");
-    }
-
-    try {
-      setLoading(true);
-      await verifyEmailOTP({ email, unique_otp: emailOtp });
-      setEmailVerified(true);
-      setSuccess("Email verified");
-    } catch {
-      setEmailOtp("");
-      setEmailOtpSent(false); // ✅ allow resend
-      setError("Invalid email OTP. Try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   /* ---------------- SUBMIT ---------------- */
   const handleSubmit = async (e) => {
@@ -140,7 +31,7 @@ const RegisterUser = () => {
       try {
         const body = { name, mobile_no: phone, email, password };
         const res = await regUser(body);
-      
+
         if (res?.registered) {
           // navigate();
           navigate("/register-organization", {
@@ -157,129 +48,108 @@ const RegisterUser = () => {
     }
   };
 
+  const steps = [
+    "Contact Details",
+    "Identity Verification",
+    "Bank Account",
+    "Document upload",
+  ];
+
+  const [currentStep, setCurrentStep] = useState(1);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-lg bg-white rounded-xl shadow-md p-6 space-y-6"
-      >
-        <h2 className="text-2xl font-semibold text-center">Create Account</h2>
+    <div className="h-screen w-full flex overflow-hidden bg-white">
+      {/* LEFT PANEL */}
+      <div className="w-full lg:w-[45%] h-screen bg-white flex flex-col">
+        {/* Fixed Header */}
+        <div className="px-10 pt-8 pb-6 border-b border-slate-200 bg-white">
+          {/* <div className="px-4 sm:px-6 md:px-10 pt-5 sm:pt-6 md:pt-8 pb-4 sm:pb-5 md:pb-6 border-b border-slate-200 bg-white"> */}
+          {/* Logo */}
+          <div className="flex items-center gap-2 mb-4">
+            <img src={logo} alt="Spay Fintech" className="h-8 object-contain" />
 
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        {success && <p className="text-green-600 text-center">{success}</p>}
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">Spay Fintech</h2>
 
-        <input
-          placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full border rounded-lg px-4 py-2"
-        />
-
-        {/* PHONE */}
-        <div>
-          <input
-            placeholder="Phone"
-            type="number"
-            value={phone}
-            disabled={phoneVerified}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2"
-          />
-          <button
-            onClick={handleSendPhoneOTP}
-            disabled={phoneVerified}
-            className="mt-2 w-full bg-blue-600 text-white py-2 rounded-lg"
-          >
-            {phoneOtpSent ? "Resend OTP" : "Send OTP"}
-          </button>
-
-          {phoneOtpSent && !phoneVerified && (
-            <div className="flex gap-2 mt-2">
-              <input
-                value={phoneOtp}
-                maxLength={6}
-                onChange={(e) => setPhoneOtp(e.target.value.replace(/\D/g, ""))}
-                className="flex-1 border rounded-lg px-4 py-2 text-center"
-              />
-              <button
-                onClick={handleVerifyPhoneOTP}
-                className="bg-emerald-600 text-white px-4 rounded-lg"
-              >
-                Verify
-              </button>
+              <p className="text-xs text-slate-400">Merchant Onboarding</p>
             </div>
-          )}
+          </div>
+
+          {/* Stepper */}
+          <div className="flex items-center">
+            {steps.map((step, index) => (
+              <React.Fragment key={step}>
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all
+              ${
+                index + 1 <= currentStep
+                  ? "bg-blue-600 text-white"
+                  : "border border-slate-300 text-slate-400"
+              }`}
+                  >
+                    {index + 1}
+                  </div>
+
+                  <span
+                    className={`mt-1.5 sm:mt-2 text-[9px] sm:text-[10px] md:text-[11px] leading-tight text-center max-w-[55px] sm:max-w-[70px]
+              ${index + 1 <= currentStep ? "text-blue-600" : "text-slate-400"}`}
+                  >
+                    {step}
+                  </span>
+                </div>
+
+                {index !== steps.length - 1 && (
+                  <div
+                    className={`flex-1 h-[2px] mx-3
+              ${index + 1 < currentStep ? "bg-blue-600" : "bg-slate-200"}`}
+                  />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
         </div>
 
-        {/* EMAIL */}
-        <div>
-          <input
-            placeholder="Email"
-            value={email}
-            type="email"
-            disabled={emailVerified}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2"
-          />
-          <button
-            onClick={handleSendEmailOTP}
-            disabled={emailVerified}
-            className="mt-2 w-full bg-blue-600 text-white py-2 rounded-lg"
-          >
-            {emailOtpSent ? "Resend OTP" : "Send OTP"}
-          </button>
+        {/* Scrollable Form */}
+        <div className="flex-1 overflow-y-auto px-10 py-8 no-scrollbar">
+          {currentStep === 1 && (
+            <ContactDetailsForm onNext={() => setCurrentStep(2)} />
+          )}
 
-          {emailOtpSent && !emailVerified && (
-            <div className="flex gap-2 mt-2">
-              <input
-                value={emailOtp}
-                maxLength={6}
-                onChange={(e) => setEmailOtp(e.target.value.replace(/\D/g, ""))}
-                className="flex-1 border rounded-lg px-4 py-2 text-center"
-              />
-              <button
-                onClick={handleVerifyEmailOTP}
-                className="bg-emerald-600 text-white px-4 rounded-lg"
-              >
-                Verify
-              </button>
-            </div>
+          {currentStep === 2 && (
+            <AadhaarForm
+              onBack={() => setCurrentStep(1)}
+              onNext={() => setCurrentStep(3)}
+            />
+          )}
+
+          {currentStep === 3 && (
+            <BankAccountForm
+              onBack={() => setCurrentStep(2)}
+              onNext={() => setCurrentStep(4)}
+            />
+          )}
+
+          {currentStep === 4 && (
+            <PanCardForm
+              onBack={() => setCurrentStep(3)}
+              onSubmit={handleSubmit}
+            />
           )}
         </div>
+      </div>
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full border rounded-lg px-4 py-2"
+      {/* RIGHT PANEL */}
+      <div className="hidden lg:flex lg:w-[58%] bg-[#9FC5FF] items-center justify-center relative">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#C3D8FC] to-[#C3D8FC]" />
+        {/* Illustration */}
+        <img
+          src={LoginIllustration}
+          alt="Login Illustration"
+          className="relative z-10 w-[68%] max-h-[120vh] object-contain"
         />
-
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full border rounded-lg px-4 py-2"
-        />
-
-        <select
-          value={option}
-          onChange={(e) => setOption(e.target.value)}
-          className="w-full border rounded-lg px-4 py-2"
-        >
-          <option value="Individual">Individual</option>
-          <option value="Organization">Organization</option>
-        </select>
-
-        <button
-          type="submit"
-          disabled={regLoading}
-          className="w-full bg-blue-600 text-white py-3 rounded-lg disabled:opacity-50"
-        >
-          {regLoading ? "Creating..." : "Create Account"}
-        </button>
-      </form>
+      </div>
     </div>
   );
 };

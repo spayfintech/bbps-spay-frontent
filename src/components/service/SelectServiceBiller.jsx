@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
-import placeholderImg from "../../images/Spaylogo.jpg";
+import placeholderImg from "../../images/Spaylogo.png";
+import BillAvenuelogo from "../../images/BillAvenuelogo.png";
 import { useGet } from "../../hooks/useGet";
 import { usePost } from "../../hooks/usePost";
 import { useServicesContext } from "../../contexts/ServicesAuthContext";
@@ -119,24 +120,34 @@ const SelectServiceBiller = () => {
         </>
       }
       renderMiddle={
-        billerOptions.length > 0 ? (
-          <Select
-            options={billerOptions}
-            isLoading={loading}
-            placeholder="Select Biller"
-            onChange={(option) => option && onChangeHandler(option.value)}
-            value={
-              billerOptions.find((opt) => opt.value === selectedBillerId) ||
-              null
-            }
-            isClearable
-            className="text-sm"
-            classNamePrefix="react-select"
-            menuPlacement="auto"
-          />
-        ) : (
-          <div>No Biller Available</div>
-        )
+        <>
+          <div className="flex justify-end mb-4">
+            <img
+              src={BillAvenuelogo}
+              alt="Bill Avenue"
+              className="h-4 object-contain"
+            />
+          </div>
+
+          {billerOptions.length > 0 ? (
+            <Select
+              options={billerOptions}
+              isLoading={loading}
+              placeholder="Select Biller"
+              onChange={(option) => option && onChangeHandler(option.value)}
+              value={
+                billerOptions.find((opt) => opt.value === selectedBillerId) ||
+                null
+              }
+              isClearable
+              className="text-sm"
+              classNamePrefix="react-select"
+              menuPlacement="auto"
+            />
+          ) : (
+            <div>No Biller Available</div>
+          )}
+        </>
       }
       renderFooter={(close) => (
         <>

@@ -1,4 +1,6 @@
 import { Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+
 import LoginPage from "./pages/LoginPage";
 import ContactUs from "./pages/ContactUs";
 import { Layout } from "./components/Layout";
@@ -12,6 +14,7 @@ import RegisterUser from "./pages/RegisterUser";
 import UserRegristrationPage from "./pages/OrganizationRegristrationPage";
 import UserRegristration from "./pages/UserRegristration";
 import UserInstruction from "./pages/UserInstruction";
+import ReceiptPage from "./pages/ReceiptPage";
 import UserRegProtectedRoute from "./components/UserRegProtectedRoute";
 
 function App() {
@@ -22,6 +25,8 @@ function App() {
           {/* Public Route */}
           <Route path="/" element={<LoginPage />} />
           <Route path="/register" element={<RegisterUser />} />
+
+          <Route path="/receipt" element={<ReceiptPage />} />
 
           <Route element={<UserRegProtectedRoute isAllowed={true} />}>
             <Route
@@ -78,6 +83,16 @@ function App() {
             />
           </Route>
         </Routes>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          theme="light"
+        />
       </CookiesProvider>
     </SchemeContextProvider>
   );

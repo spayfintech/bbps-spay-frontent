@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
-import placeholderImg from "../../images/Spaylogo.jpg";
+import placeholderImg from "../../images/Spaylogo.png";
+import BillAvenuelogo from "../../images/BillAvenuelogo.png";
 import { usePost } from "../../hooks/usePost";
 import { useServicesContext } from "../../contexts/ServicesAuthContext";
 import { useMemo } from "react";
@@ -45,7 +46,7 @@ const DetailInput = () => {
      LOAD selectedBiller PARAMS
   ------------------------------------------------------- */
   useEffect(() => {
-     if (error?.result?.message) {
+    if (error?.result?.message) {
       setResError(error.result.message);
       return;
     }
@@ -58,7 +59,7 @@ const DetailInput = () => {
     }
     if (error?.result?.decryptedResponse?.errorInfo) {
       setResError(
-        error?.result?.decryptedResponse.errorInfo.error[0].errorMessage
+        error?.result?.decryptedResponse.errorInfo.error[0].errorMessage,
       ); // sync UI error
       // "line 45",
       // error?.result?.decryptedResponse.errorInfo.error[0].errorMessage
@@ -107,7 +108,7 @@ const DetailInput = () => {
   const handleCancel = (close) => {
     window.location.reload(true);
     close();
-   };
+  };
   /* -------------------------------------------------------
      SUBMIT REQUEST
   ------------------------------------------------------- */
@@ -127,8 +128,8 @@ const DetailInput = () => {
     };
 
     // 3️⃣ Build API request body
-     const currentBillerFetchRequiremet = billerFetchRequiremet;
- 
+    const currentBillerFetchRequiremet = billerFetchRequiremet;
+
     // if()
     const requestBody = {
       data: {
@@ -138,7 +139,6 @@ const DetailInput = () => {
       },
     };
 
-   
     // 4️⃣ API CALL
 
     // callAPI()
@@ -147,7 +147,7 @@ const DetailInput = () => {
     const response = await fetchResponse(requestBody.data);
 
     if (!response) {
-       return;
+      return;
     }
     // const response = await fetchResponse(requestBody.data);
     // checkError();
@@ -161,7 +161,7 @@ const DetailInput = () => {
 
     // Otherwise, success shape
     const decrypted = res?.decryptedResponse;
-   
+
     if (!decrypted || decrypted.responseCode !== "000") {
       setResError(decrypted?.responseReason || "Unknown error");
       return;
@@ -169,7 +169,7 @@ const DetailInput = () => {
 
     // Success → proceed
 
-     close();
+    close();
 
     // 5️⃣ Send next modal data
     setTimeout(() => {
@@ -252,7 +252,9 @@ const DetailInput = () => {
       </div>
 
       <div className="flex flex-col mb-3">
-        <label className="font-semibold mb-1">Customer Mobile <span className="text-red-500"> *</span></label>
+        <label className="font-semibold mb-1">
+          Customer Mobile <span className="text-red-500"> *</span>
+        </label>
         <input
           type="text"
           className="border p-2 rounded"
@@ -301,28 +303,31 @@ const DetailInput = () => {
           </span>
         </>
       }
-renderMiddle={
-  <>
-    {selectedBiller ? (
-      <>
-        <div className="space-y-2">
-          {inputMapper()}
-        </div>
-
-        {billerFetchRequiremet && (
-          <div className="mt-2 space-y-2">
-            {mandatoryInputs()}
+      renderMiddle={
+        <>
+          <div className="flex justify-end mb-2">
+            <img
+              src={BillAvenuelogo}
+              alt="Bill Avenue"
+              className="h-4 object-contain"
+            />
           </div>
-        )}
 
-        {resError && <ErrorToast errMsg={resError} />}
-      </>
-    ) : (
-      <p className="text-sm">Loading...</p>
-    )}
-  </>
-}
+          {selectedBiller ? (
+            <>
+              <div className="space-y-2">{inputMapper()}</div>
 
+              {billerFetchRequiremet && (
+                <div className="mt-2 space-y-2">{mandatoryInputs()}</div>
+              )}
+
+              {resError && <ErrorToast errMsg={resError} />}
+            </>
+          ) : (
+            <p className="text-sm">Loading...</p>
+          )}
+        </>
+      }
       renderFooter={(close) => (
         <div className="flex justify-end space-x-2 mt-2">
           <button

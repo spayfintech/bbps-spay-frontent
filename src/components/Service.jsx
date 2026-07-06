@@ -72,7 +72,7 @@ const servicesList = [
   { icon: faUser, label: "National Pension System" },
   { icon: faTrain, label: "NCMC Recharge" },
   { icon: faPlug, label: "Prepaid Meter" },
-  { icon: faIndianRupeeSign, label: "Recurring Deposit" },
+  // { icon: faIndianRupeeSign, label: "Recurring Deposit" },
   { icon: faHouse, label: "Rental" },
   { icon: faRotate, label: "Subscription" },
   { icon: faDroplet, label: "Water" },

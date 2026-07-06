@@ -1,10 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
-import placeholderImg from "../../images/Spaylogo.jpg";
+import placeholderImg from "../../images/Spaylogo.png";
+import BillAvenuelogo from "../../images/BillAvenuelogo.png";
 import { usePost } from "../../hooks/usePost";
 import { useServicesContext } from "../../contexts/ServicesAuthContext";
 import ErrorToast from "../ErrorToast";
+
+import BBPSQrSection from "./BBPSQrSection";
 
 const DetailConfirmation = () => {
   const { isModalOpen, getModalData, closeModal, openModal } = useModal();
@@ -28,6 +31,7 @@ const DetailConfirmation = () => {
   });
 
   const [userData, setUserData] = useState({});
+  const [qrPaymentSuccess, setQrPaymentSuccess] = useState(false);
   const [isPanInputDisplay, setIsPanInputDisplay] = useState(false);
 
   const {
@@ -71,7 +75,7 @@ const DetailConfirmation = () => {
 
     setUserDataRequire(
       selectedBiller?.billerFetchRequiremet !== "MANDATORY" &&
-        selectedBiller?.billerFetchRequiremet !== "OPTIONAL"
+        selectedBiller?.billerFetchRequiremet !== "OPTIONAL",
     );
 
     setInput(data?.inputParams?.input || []);
@@ -88,7 +92,7 @@ const DetailConfirmation = () => {
           value:
             i[valueKey] && typeof i[valueKey] === "object"
               ? JSON.stringify(i[valueKey], null, 2)
-              : i[valueKey] ?? "",
+              : (i[valueKey] ?? ""),
         }))
       : [];
 
@@ -99,7 +103,7 @@ const DetailConfirmation = () => {
           value:
             i.infoValue && typeof i.infoValue === "object"
               ? JSON.stringify(i.infoValue, null, 2)
-              : i.infoValue ?? "",
+              : (i.infoValue ?? ""),
         }))
       : [];
 
@@ -115,7 +119,8 @@ const DetailConfirmation = () => {
               key: "amountOptions",
               value: value.option
                 .map(
-                  (opt) => `${opt.amountName}: ${Number(opt.amountValue) / 100}`
+                  (opt) =>
+                    `${opt.amountName}: ${Number(opt.amountValue) / 100}`,
                 )
                 .join(" | "),
             };
@@ -155,8 +160,8 @@ const DetailConfirmation = () => {
     ...(formValues.customerPan
       ? { customerPan: formValues.customerPan }
       : custData?.customerPan
-      ? { customerPan: custData.customerPan }
-      : {}),
+        ? { customerPan: custData.customerPan }
+        : {}),
 
     paymentMode: "Cash",
     splitPay: "N",
@@ -174,7 +179,7 @@ const DetailConfirmation = () => {
   const handlePay = async () => {
     // return;
     const response = await fetchPayment(finalMergedData);
-    
+
     // Generic API error
     if (response?.status === false && response?.message) {
       setResError(response.message);
@@ -205,6 +210,12 @@ const DetailConfirmation = () => {
     });
   };
 
+  useEffect(() => {
+    if (qrPaymentSuccess && userData?.remitterName && userData?.remarks) {
+      handlePay();
+    }
+  }, [qrPaymentSuccess, userData?.remitterName, userData?.remarks]);
+
   return (
     <ServicesModalWrapper
       isOpen={isModalOpen("finalData")}
@@ -219,6 +230,14 @@ const DetailConfirmation = () => {
       }
       renderMiddle={
         <>
+          <div className="flex justify-end mb-2">
+            <img
+              src={BillAvenuelogo}
+              alt="Bill Avenue"
+              className="h-4 object-contain"
+            />
+          </div>
+
           {/* Amount Field */}
           {acceptAmount && (
             <div className="mt-4">
@@ -281,75 +300,131 @@ const DetailConfirmation = () => {
 
           {resError && <ErrorToast errMsg={resError} />}
 
-          {/* USER DETAILS — UNCHANGED */}
-          <div className="mt-5 bg-gray-50 p-4 rounded-lg shadow-sm border">
-            <h3 className="font-semibold text-lg mb-3 text-gray-800">
-              Customer Details
-            </h3>
-
-            {userDataRequire && (
-              <div className="space-y-3">
-                <div>
-                  <label className="font-medium block mb-1">
-                    Customer Mobile
-                  </label>
-                  <input
-                    type="text"
-                    name="customerMobile"
-                    maxLength={10}
-                    className="w-full border p-2 rounded"
-                    onChange={(e) =>
-                      handleChange(e.target.name, e.target.value)
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label className="font-medium block mb-1">Customer PAN</label>
-                  <input
-                    type="text"
-                    name="customerPan"
-                    className="w-full border p-2 rounded"
-                    onChange={(e) =>
-                      handleChange(e.target.name, e.target.value)
-                    }
-                  />
-                </div>
-
-                <div>
-                  <label className="font-medium block mb-1">
-                    Customer Email
-                  </label>
-                  <input
-                    type="email"
-                    name="customerEmail"
-                    className="w-full border p-2 rounded"
-                    onChange={(e) =>
-                      handleChange(e.target.name, e.target.value)
-                    }
-                  />
-                </div>
-              </div>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-[30%_68%] gap-4 mt-5">
+            {/* USER DETAILS — UNCHANGED */}
 
             <div>
-              <label className="font-medium block mb-1">Remitter Name</label>
-              <input
-                type="text"
-                name="remitterName"
-                className="w-full border p-2 rounded"
-                onChange={(e) => handleChange(e.target.name, e.target.value)}
+              {/* <BBPSQrSection
+                dynamicRows={dynamicRows}
+                custData={custData}
+                userData={userData}
+                amount={acceptAmount ? formValues.amount : null}
+              /> */}
+
+              <BBPSQrSection
+                dynamicRows={dynamicRows}
+                custData={custData}
+                userData={userData}
+                amount={acceptAmount ? formValues.amount : null}
+                // onPaymentSuccess={(paymentData) => {
+                //   setUserData((prev) => ({
+                //     ...prev,
+                //     remitterName: paymentData.amount,
+                //     remarks: paymentData.message,
+                //   }));
+
+                //   setQrPaymentSuccess(true);
+                // }}
+                onPaymentSuccess={(paymentData) => {
+                  setUserData((prev) => ({
+                    ...prev,
+                    // remitterName: paymentData.amount,
+                    remitterName: paymentData.rrn,
+                    remarks: paymentData.message,
+                  }));
+
+                  setQrPaymentSuccess(true);
+                }}
               />
             </div>
 
-            <div>
-              <label className="font-medium block mb-1">Remarks</label>
-              <input
-                type="text"
-                name="remarks"
-                className="w-full border p-2 rounded"
-                onChange={(e) => handleChange(e.target.name, e.target.value)}
-              />
+            <div className="bg-gray-50 p-4 rounded-lg shadow-sm border">
+              <h3 className="font-semibold text-lg mb-3 text-gray-800">
+                Customer Details
+              </h3>
+
+              {userDataRequire && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="font-medium block mb-1">
+                      Customer Mobile
+                    </label>
+                    <input
+                      type="text"
+                      name="customerMobile"
+                      maxLength={10}
+                      className="w-full border p-1 rounded"
+                      onChange={(e) =>
+                        handleChange(e.target.name, e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-medium block mb-1">
+                      Customer PAN
+                    </label>
+                    <input
+                      type="text"
+                      name="customerPan"
+                      className="w-full border p-1 rounded"
+                      onChange={(e) =>
+                        handleChange(e.target.name, e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-medium block mb-1">
+                      Customer Email
+                    </label>
+                    <input
+                      type="email"
+                      name="customerEmail"
+                      className="w-full border p-2 rounded"
+                      onChange={(e) =>
+                        handleChange(e.target.name, e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div>
+                <label className="font-medium block mb-1">Remitter Name</label>
+                {/* <input
+                  type="text"
+                  name="remitterName"
+                  disabled={true}
+                  className="w-full border p-2 rounded cursor-not-allowed"
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                /> */}
+                <input
+                  type="text"
+                  name="remitterName"
+                  value={userData?.remitterName || ""}
+                  disabled
+                  className="w-full border p-2 rounded cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="font-medium block mb-1">Remarks</label>
+                {/* <input
+                  type="text"
+                  name="remarks"
+                  disabled={true}
+                  className="w-full border p-2 rounded cursor-not-allowed"
+                  onChange={(e) => handleChange(e.target.name, e.target.value)}
+                /> */}
+                <input
+                  type="text"
+                  name="remarks"
+                  value={userData?.remarks || ""}
+                  disabled
+                  className="w-full border p-2 rounded cursor-not-allowed"
+                />
+              </div>
             </div>
           </div>
 
@@ -376,11 +451,20 @@ const DetailConfirmation = () => {
         <div className="flex justify-center gap-3 mt-4">
           <button
             type="submit"
-            disabled={loading}
             onClick={handlePay}
-            className="px-6 py-2 bg-green-600 text-white rounded"
+            // className="px-6 py-2 bg-green-600 text-white rounded cursor-not-allowed opacity-60"
+            // disabled={loading}
+            // disabled={true}
+            // disabled={!qrPaymentSuccess}
+            disabled={loading || !qrPaymentSuccess}
+            className={`px-6 py-2 text-white rounded ${
+              qrPaymentSuccess
+                ? "bg-green-600"
+                : "bg-green-600 opacity-60 cursor-not-allowed"
+            }`}
+            // className="px-6 py-2 bg-green-600 text-white rounded"
           >
-            {loading ? "Processing..." : "Pay"}
+            {loading ? "Submiting..." : "Submit"}
           </button>
           <button
             onClick={() => handleCancel(close)}

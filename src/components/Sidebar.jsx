@@ -26,6 +26,8 @@ import { useAuth } from "../contexts/AuthContext";
 import Scheme from "../pages/Scheme";
 import { useNavigate } from "react-router-dom";
 
+import logo from "../images/spaylogo.png";
+
 export const navItems = [
   {
     icon: faGauge,
@@ -126,10 +128,7 @@ export const Sidebar = ({
         ref={sidebarRef}
         className={`
           flex flex-col
-          bg-gradient-to-b
-          from-[#052B7A]
-          via-[#0637A4]
-          to-[#0B57F0]
+          bg-[linear-gradient(180deg,#0a43c2_0%,#062b7a_65%,#0b57f0_100%)]
           text-white
           shadow-2xl
           h-full
@@ -153,24 +152,20 @@ export const Sidebar = ({
         <div className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(circle_at_bottom,_white,_transparent_40%)]" />
 
         {/* LOGO */}
-        <div className="relative z-10 px-6 pt-6 pb-7">
-          <h1
+        {/* <div className="relative z-10 px-6 pb-7">
+          <img
+            src={logo}
+            alt="SPay Logo"
             onClick={() => {
               if (isMobile) setIsMobileSidebarOpen(true);
-              else navigate("/dashboard"); // navigate to dashboard
+              else navigate("/dashboard");
             }}
-            className="text-[42px] font-black leading-none tracking-tight cursor-pointer"
-          >
-            S<span className="font-light">Pay</span>
-          </h1>
-
-          <p className="text-[12px] text-blue-100 font-medium mt-1 ml-1">
-            BBPS Dashboard
-          </p>
-        </div>
+            className="w-[110px] cursor-pointer"
+          />
+        </div> */}
 
         {/* NAVIGATION */}
-        <nav className="relative z-10 grow px-4 py-3">
+        <nav className="relative z-10 grow px-4 pt-5">
           <ul className="space-y-1">
             {filteredNavItems.map((item, index) => {
               const isActive = location.pathname === item.path;

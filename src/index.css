@@ -120,3 +120,13 @@
   scrollbar-width: thin;
   scrollbar-color: #4aa4e0 #f1f5f9;
 } */
+
+/* Hide scrollbar of register page */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
