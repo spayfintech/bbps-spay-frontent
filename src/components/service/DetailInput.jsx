@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
-import placeholderImg from "../../images/Spaylogo.png";
-import BillAvenuelogo from "../../images/BillAvenuelogo.png";
 import { usePost } from "../../hooks/usePost";
 import { useServicesContext } from "../../contexts/ServicesAuthContext";
 import { useMemo } from "react";
@@ -106,7 +104,7 @@ const DetailInput = () => {
 --------------------------------------------*/
 
   const handleCancel = (close) => {
-    window.location.reload(true);
+    // window.location.reload(true);
     close();
   };
   /* -------------------------------------------------------
@@ -297,7 +295,6 @@ const DetailInput = () => {
       onClose={() => closeModal("details")}
       renderHeader={
         <>
-          <img src={placeholderImg} alt="Logo" className="h-6" />
           <span className="font-semibold ml-2 text-sm">
             Details for {selectedBiller?.billerName}
           </span>
@@ -305,14 +302,6 @@ const DetailInput = () => {
       }
       renderMiddle={
         <>
-          <div className="flex justify-end mb-2">
-            <img
-              src={BillAvenuelogo}
-              alt="Bill Avenue"
-              className="h-4 object-contain"
-            />
-          </div>
-
           {selectedBiller ? (
             <>
               <div className="space-y-2">{inputMapper()}</div>

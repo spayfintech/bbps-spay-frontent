@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import { usePost } from "../hooks/usePost";
+import { useAuth } from "../contexts/AuthContext";
 
 import { Eye, EyeOff } from "lucide-react";
 import logo from "../images/spaylogo.png";
@@ -15,6 +16,8 @@ const LoginPage = () => {
 
   const navigate = useNavigate();
   const [, setCookie] = useCookies(["token"]);
+
+  const { fetchProfile } = useAuth();
 
   const { loading, error, execute: login } = usePost("/login");
 
@@ -36,6 +39,10 @@ const LoginPage = () => {
         password,
       });
 
+      if (!res) {
+        return;
+      }
+
       setCookie("token", res.token, {
         path: "/",
       });
@@ -47,6 +54,8 @@ const LoginPage = () => {
       setCookie("user", res.user, {
         path: "/",
       });
+
+      await fetchProfile(res.token);
 
       navigate("/dashboard");
     } catch (err) {

@@ -1,12 +1,21 @@
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGauge,
   faMagnifyingGlass,
   faBuildingColumns,
+  faMoneyCheckDollar,
   faTriangleExclamation,
+  faCog,
   faCircleExclamation,
   faUsers,
   faDiagramProject,
+  faChevronDown,
+  faChevronRight,
+  faIdCard,
+  faWallet,
+  faMoneyBillTransfer,
+  faPercent,
 } from "@fortawesome/free-solid-svg-icons";
 
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
@@ -15,15 +24,24 @@ import { Link, useLocation } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
 import Dashboard from "../pages/Dashboard";
-import { ServicePage } from "../pages/ServicePage";
+import MainServices from "../pages/MainServices";
+
 import Report from "../pages/Report";
-import Support from "../pages/Support";
+
+import LoadWallet from "../pages/LoadWallet";
+// import Payinsettlement from "../pages/Payinsettlement";
+// import Payoutstatement from "../pages/Payoutstatement";
+
 import ComplaintPage from "../pages/ComplaintPage";
-import CheckTransactionComplaint from "../pages/CheckTransactionComplaint";
+import commissions from "../pages/commissions";
 import Users from "../pages/Users";
-import CheckTransactionStatus from "../pages/CheckTransactionStatus";
+import MerchantOnboarding from "../pages/MerchantOnboarding";
+import MerchantKycPage from "../pages/MerchantKycPage";
+import AddFundOverview from "../pages/AddFundOverview";
+import CommissionSelection from "../pages/CommissionSelection";
 import { useAuth } from "../contexts/AuthContext";
-import Scheme from "../pages/Scheme";
+import Scheme from "../pages/Scheme/Scheme";
+import Qrscheme from "../pages/Scheme/Qrscheme";
 import { useNavigate } from "react-router-dom";
 
 import logo from "../images/spaylogo.png";
@@ -36,63 +54,134 @@ export const navItems = [
     roles: ["admin", "user"],
     component: Dashboard,
   },
+  // {
+  //   icon: faDiagramProject,
+  //   label: "Scheme",
+  //   path: "",
+  //   roles: ["admin"],
+  //   component: Scheme,
+  // },
+
   {
     icon: faDiagramProject,
-    label: "Scheme",
-    path: "/scheme",
+    label: "Scheme Manager",
     roles: ["admin"],
-    component: Scheme,
+    children: [
+      {
+        label: "BBPS Scheme",
+        path: "/scheme",
+        component: Scheme,
+      },
+      {
+        label: "QR Scheme",
+        path: "/Qrscheme",
+        component: Qrscheme,
+      },
+    ],
   },
+
   {
     icon: faUsers,
-    label: "Users",
-    path: "/users",
+    label: "Members",
     roles: ["admin"],
-    component: Users,
+    children: [
+      {
+        label: "Users",
+        path: "/users",
+        component: Users,
+      },
+      {
+        label: "Merchant Onboarding",
+        path: "/merchant-onboarding",
+        component: MerchantOnboarding,
+      },
+    ],
   },
+
   {
     icon: faBuildingColumns,
     label: "Services",
-    path: "/services",
+    path: "/all-services",
     roles: ["admin", "user"],
-    component: ServicePage,
+    component: MainServices,
   },
+
+  {
+    icon: faMoneyBillTransfer,
+    label: "Funds",
+    roles: ["admin"],
+    children: [
+      {
+        label: "Load Wallet",
+        path: "/load-wallet",
+        component: LoadWallet,
+      },
+      {
+        label: "Payin Settlement",
+        path: "/payin-settlement",
+        component: LoadWallet,
+      },
+    ],
+  },
+
   {
     icon: faFileLines,
     label: "Report",
-    path: "/report",
     roles: ["admin", "user"],
-    component: Report,
+    children: [
+      {
+        label: "Transaction History",
+        path: "/report",
+        component: Report,
+      },
+      {
+        label: "Payout Statement",
+        path: "/payout-statement",
+        component: LoadWallet,
+      },
+    ],
+  },
+
+  {
+    icon: faIdCard,
+    label: "Update KYC",
+    path: "/merchant/kyc",
+    roles: ["user"],
+    component: MerchantKycPage,
   },
   {
-    icon: faMagnifyingGlass,
-    label: "Support",
-    path: "/support",
-    roles: ["user", "admin"],
-    component: Support,
+    icon: faWallet,
+    label: "Add Fund",
+    path: "/add-funds",
+    roles: ["user"],
+    component: AddFundOverview,
+  },
+  {
+    icon: faPercent,
+    label: "Commision plan",
+    path: "/commission",
+    roles: ["user"],
+    component: CommissionSelection,
   },
   {
     icon: faTriangleExclamation,
-    label: "Complaint",
+    label: "Support Ticket",
     path: "/complaint",
     roles: ["admin", "user"],
     component: ComplaintPage,
   },
   {
-    icon: faCircleExclamation,
-    label: "Check Complaint",
-    path: "/checkcomplaint",
-    roles: ["user", "admin"],
-    component: CheckTransactionComplaint,
+    icon: faCog,
+    label: "Settings",
+    roles: ["admin"],
+    children: [
+      {
+        label: "Commission & Charges",
+        path: "/setting-commissions",
+        component: commissions,
+      },
+    ],
   },
-
-  // {
-  //   icon: faCircleExclamation,
-  //   label: "Check Transaction Status",
-  //   path: "/checktransactionstatus",
-  //   roles: ["admin"],
-  //   component: CheckTransactionStatus,
-  // },
 ];
 
 export const Sidebar = ({
@@ -107,9 +196,31 @@ export const Sidebar = ({
 
   const role = cookie.role === 1 ? "admin" : "user";
 
-  const filteredNavItems = navItems.filter((item) => item.roles.includes(role));
+  let filteredNavItems = navItems.filter((item) => item.roles.includes(role));
+
+  if (role === "user") {
+    const kycStatus = Number(user?.kyc?.status);
+
+    // Pending
+    if (kycStatus === 1) {
+      filteredNavItems = filteredNavItems.filter((item) =>
+        ["Dashboard", "Complaint"].includes(item.label),
+      );
+    }
+
+    // Rejected
+    else if (kycStatus === 3) {
+      filteredNavItems = filteredNavItems.filter((item) =>
+        ["Update KYC"].includes(item.label),
+      );
+    }
+  }
 
   const navigate = useNavigate();
+
+  const [openMenus, setOpenMenus] = useState({
+    Members: false,
+  });
 
   return (
     <div
@@ -151,74 +262,98 @@ export const Sidebar = ({
         {/* BACKGROUND GLOW */}
         <div className="absolute inset-0 opacity-[0.06] bg-[radial-gradient(circle_at_bottom,_white,_transparent_40%)]" />
 
-        {/* LOGO */}
-        {/* <div className="relative z-10 px-6 pb-7">
-          <img
-            src={logo}
-            alt="SPay Logo"
-            onClick={() => {
-              if (isMobile) setIsMobileSidebarOpen(true);
-              else navigate("/dashboard");
-            }}
-            className="w-[110px] cursor-pointer"
-          />
-        </div> */}
-
         {/* NAVIGATION */}
         <nav className="relative z-10 grow px-4 pt-5">
           <ul className="space-y-1">
             {filteredNavItems.map((item, index) => {
+              const hasChildren = item.children?.length;
+
+              if (hasChildren) {
+                return (
+                  <li key={index}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenMenus((prev) => ({
+                          ...prev,
+                          [item.label]: !prev[item.label],
+                        }))
+                      }
+                      className="group flex items-center justify-between w-full h-11 px-4 rounded-xl hover:bg-white/10 transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        <FontAwesomeIcon
+                          icon={item.icon}
+                          className="text-blue-100 group-hover:text-white"
+                        />
+
+                        <span className="text-[13px] font-medium text-blue-50 group-hover:text-white">
+                          {item.label}
+                        </span>
+                      </div>
+
+                      <FontAwesomeIcon
+                        icon={
+                          openMenus[item.label] ? faChevronDown : faChevronRight
+                        }
+                        className="text-xs text-blue-100"
+                      />
+                    </button>
+
+                    {openMenus[item.label] && (
+                      <ul className="ml-7 mt-1 space-y-1">
+                        {item.children.map((child) => {
+                          const active = location.pathname === child.path;
+
+                          return (
+                            <li key={child.path}>
+                              <Link
+                                to={child.path}
+                                className={`block px-4 py-2 rounded-lg text-sm transition ${
+                                  active
+                                    ? "bg-[#1F6BFF] text-white"
+                                    : "text-blue-100 hover:bg-white/10 hover:text-white"
+                                }`}
+                              >
+                                {child.label}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </li>
+                );
+              }
+
               const isActive = location.pathname === item.path;
 
               return (
                 <li key={index}>
                   <Link
                     to={item.path}
-                    className={`
-                      group
-                      flex
-                      items-center
-                      h-11
-                      px-4
-                      rounded-xl
-                      transition-all
-                      duration-300
-
-                      ${
-                        isActive
-                          ? "bg-[#1F6BFF] shadow-lg shadow-blue-900/40"
-                          : "hover:bg-white/10"
-                      }
-                    `}
+                    className={`group flex items-center h-11 px-4 rounded-xl transition-all duration-300 ${
+                      isActive
+                        ? "bg-[#1F6BFF] shadow-lg shadow-blue-900/40"
+                        : "hover:bg-white/10"
+                    }`}
                   >
                     <div className="flex items-center gap-3">
                       <FontAwesomeIcon
                         icon={item.icon}
-                        className={`
-                          text-[16px]
-                          transition-all
-                          duration-300
-
-                          ${
-                            isActive
-                              ? "text-white"
-                              : "text-blue-100 group-hover:text-white"
-                          }
-                        `}
+                        className={
+                          isActive
+                            ? "text-white"
+                            : "text-blue-100 group-hover:text-white"
+                        }
                       />
 
                       <span
-                        className={`
-                          text-[13px]
-                          font-medium
-                          tracking-[0.2px]
-
-                          ${
-                            isActive
-                              ? "text-white"
-                              : "text-blue-50 group-hover:text-white"
-                          }
-                        `}
+                        className={
+                          isActive
+                            ? "text-white text-[13px] font-medium"
+                            : "text-blue-50 text-[13px] font-medium group-hover:text-white"
+                        }
                       >
                         {item.label}
                       </span>
@@ -251,7 +386,7 @@ export const Sidebar = ({
           {/* FOOTER */}
           <div className="mt-5 border-t border-white/10 pt-4">
             <p className="text-[12px] text-blue-100 font-medium">
-              © 2026 SPay Fintech
+              © 2026 Spay Fintech
             </p>
 
             <p className="text-[11px] text-blue-200/70 mt-1">

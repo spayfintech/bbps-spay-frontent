@@ -1,0 +1,1161 @@
+/* ============================================================
+   SPAY QR SERVICES
+   SCREEN + PROFESSIONAL A4 PRINT
+   ============================================================ */
+
+
+/* ============================================================
+   PRINT TEMPLATE - HIDDEN ON SCREEN
+   ============================================================ */
+
+.spay-print-only {
+  display: none;
+}
+
+
+/* ============================================================
+   PRINT
+   ============================================================ */
+
+@media print {
+
+  /* ------------------------------------------------------------
+     A4 PAGE
+     ------------------------------------------------------------ */
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+
+  /* ------------------------------------------------------------
+     HIDE NORMAL APPLICATION
+     ------------------------------------------------------------ */
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .spay-print-only,
+  .spay-print-only * {
+    visibility: visible !important;
+  }
+
+
+  /* ------------------------------------------------------------
+     PRINT CONTAINER
+     ------------------------------------------------------------ */
+
+  .spay-print-only {
+    display: block !important;
+
+    position: fixed !important;
+    inset: 0 !important;
+
+    width: 210mm !important;
+    height: 297mm !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+
+    background: #ffffff !important;
+
+    z-index: 999999 !important;
+
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+
+  /* ============================================================
+     MAIN A4 POSTER
+     ============================================================ */
+
+  .spay-print-page {
+    position: relative;
+
+    width: 210mm;
+    height: 297mm;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background:
+      radial-gradient(
+        circle at 82% 23%,
+        rgba(31, 137, 235, 0.05),
+        transparent 22%
+      ),
+      #ffffff;
+
+    font-family:
+      Inter,
+      Arial,
+      Helvetica,
+      sans-serif;
+
+    color: #102e68;
+
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+
+  /* ============================================================
+     TOP DECORATIVE WAVES
+     ============================================================ */
+
+  .spay-top-wave {
+    position: absolute;
+
+    pointer-events: none;
+
+    z-index: 1;
+  }
+
+  .spay-top-wave-one {
+    top: -30mm;
+    left: -35mm;
+
+    width: 115mm;
+    height: 82mm;
+
+    background:
+      linear-gradient(
+        135deg,
+        #1687ed 0%,
+        #53b8f3 45%,
+        #bce7ff 68%,
+        transparent 69%
+      );
+
+    border-radius: 0 0 100% 0;
+
+    transform: rotate(-4deg);
+  }
+
+  .spay-top-wave-two {
+    top: -22mm;
+    left: -20mm;
+
+    width: 90mm;
+    height: 58mm;
+
+    background:
+      linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.35),
+        rgba(255, 255, 255, 0)
+      );
+
+    border-radius: 0 0 100% 0;
+
+    transform: rotate(-7deg);
+
+    opacity: 0.7;
+  }
+
+
+  /* ============================================================
+     HEADER
+     ============================================================ */
+
+  .spay-print-header {
+    position: relative;
+
+    z-index: 20;
+
+    width: 100%;
+
+    padding-top: 11mm;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+  }
+
+
+  /* ------------------------------------------------------------
+     LOGO
+     ------------------------------------------------------------ */
+
+  .spay-print-logo-wrap {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 72mm;
+    min-height: 25mm;
+  }
+
+  .spay-print-logo {
+    display: block;
+
+    width: 67mm;
+    max-width: 67mm;
+
+    height: auto;
+
+    object-fit: contain;
+  }
+
+
+  /* ------------------------------------------------------------
+     TRUST BLOCK
+     ------------------------------------------------------------ */
+
+  .spay-trust-block {
+    position: absolute;
+
+    top: 14mm;
+    right: 12mm;
+
+    width: 32mm;
+
+    padding-left: 7mm;
+
+    border-left: 0.35mm solid #8c9bad;
+
+    text-align: left;
+  }
+
+  .spay-trust-text {
+    font-size: 3.15mm;
+
+    line-height: 1.55;
+
+    font-weight: 800;
+
+    letter-spacing: 0.55mm;
+
+    color: #102e68;
+
+    text-transform: uppercase;
+  }
+
+  .spay-trust-line {
+    display: none;
+  }
+
+
+  /* ============================================================
+     SCAN & PAY
+     ============================================================ */
+
+  .spay-scan-heading {
+    position: relative;
+
+    z-index: 20;
+
+    width: 100%;
+
+    margin-top: 17mm;
+
+    text-align: center;
+  }
+
+  .spay-scan-heading h1 {
+    margin: 0;
+
+    padding: 0;
+
+    font-family:
+      Inter,
+      Arial,
+      Helvetica,
+      sans-serif;
+
+    font-size: 12.5mm;
+
+    line-height: 1;
+
+    font-weight: 900;
+
+    letter-spacing: -0.25mm;
+
+    color: #102e68;
+
+    white-space: nowrap;
+  }
+
+  .spay-scan-heading h1 span {
+    color: #102e68;
+  }
+
+  .spay-scan-heading h1 strong {
+    color: #1477e8;
+
+    font-weight: 900;
+  }
+
+
+  /* ------------------------------------------------------------
+     SUBTITLE
+     ------------------------------------------------------------ */
+
+  .spay-scan-subtitle {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 4.5mm;
+
+    margin-top: 4mm;
+
+    color: #173567;
+  }
+
+  .spay-scan-subtitle > span:not(.spay-heading-line) {
+    font-size: 3.7mm;
+
+    line-height: 1;
+
+    font-weight: 700;
+
+    letter-spacing: 1.25mm;
+
+    white-space: nowrap;
+  }
+
+  .spay-heading-line {
+    display: block;
+
+    width: 15mm;
+
+    height: 0.3mm;
+
+    background: #8797aa;
+  }
+
+
+  /* ============================================================
+     MAIN CONTENT
+     ============================================================ */
+
+  .spay-main-content {
+    position: relative;
+
+    z-index: 10;
+
+    width: 100%;
+
+    margin-top: 9mm;
+
+    min-height: 127mm;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: center;
+  }
+
+
+  /* ============================================================
+     LEFT FEATURES
+     ============================================================ */
+
+  .spay-left-features {
+    position: absolute;
+
+    left: 15mm;
+    top: 5mm;
+
+    width: 31mm;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 8mm;
+  }
+
+  .spay-feature {
+    width: 31mm;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+  }
+
+  .spay-feature-icon {
+    width: 17mm;
+    height: 17mm;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+      linear-gradient(
+        145deg,
+        #e4f4ff,
+        #c7e7fb
+      );
+
+    color: #102e68;
+
+    box-shadow:
+      0 2mm 5mm rgba(24, 85, 145, 0.10);
+
+    flex-shrink: 0;
+  }
+
+  .spay-feature-icon svg {
+    width: 7mm;
+    height: 7mm;
+  }
+
+  .spay-feature-title {
+    margin-top: 2.5mm;
+
+    font-size: 3.15mm;
+
+    line-height: 1.3;
+
+    font-weight: 800;
+
+    color: #102e68;
+
+    text-transform: uppercase;
+  }
+
+
+  /* ============================================================
+     QR CARD
+     ============================================================ */
+
+  .spay-qr-card {
+    position: relative;
+
+    width: 106mm;
+
+    min-height: 121mm;
+
+    padding: 6mm 7mm 6.5mm;
+
+    background: #ffffff;
+
+    border: 0.3mm solid #edf1f6;
+
+    border-radius: 7mm;
+
+    box-shadow:
+      0 4mm 14mm rgba(16, 46, 104, 0.12);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    text-align: center;
+
+    z-index: 20;
+  }
+
+
+  /* ============================================================
+     QR IMAGE
+     ============================================================ */
+
+  .spay-qr-image-wrapper {
+    position: relative;
+
+    width: 81mm;
+    height: 81mm;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto;
+  }
+
+  .spay-print-qr {
+    display: block;
+
+    width: 81mm;
+    height: 81mm;
+
+    max-width: 81mm;
+    max-height: 81mm;
+
+    object-fit: contain;
+
+    image-rendering: crisp-edges;
+
+    background: #ffffff;
+  }
+
+
+  /* ============================================================
+     CENTER SPAY LOGO
+     ============================================================ */
+
+  .spay-qr-center-logo {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 16mm;
+    height: 16mm;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #ffffff;
+
+    border-radius: 3mm;
+
+    box-shadow:
+      0 1mm 4mm rgba(0, 0, 0, 0.10);
+
+    overflow: hidden;
+
+    z-index: 5;
+  }
+
+  .spay-qr-center-logo img {
+    display: block;
+
+    width: 10.5mm;
+    height: 10.5mm;
+
+    object-fit: contain;
+  }
+
+
+  /* ============================================================
+     MERCHANT NAME
+     ============================================================ */
+
+  .spay-merchant-name {
+    margin-top: 4mm;
+
+    max-width: 90mm;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 5.8mm;
+
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    color: #102e68;
+  }
+
+
+  /* ============================================================
+     MERCHANT ID
+     ============================================================ */
+
+  .spay-merchant-id-label {
+    margin-top: 2.5mm;
+
+    font-size: 3mm;
+
+    line-height: 1;
+
+    font-weight: 600;
+
+    letter-spacing: 1.2mm;
+
+    color: #8995a6;
+
+    text-transform: uppercase;
+  }
+
+  .spay-merchant-id {
+    margin-top: 1.8mm;
+
+    max-width: 88mm;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 3.5mm;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: 0.55mm;
+
+    color: #102e68;
+
+    text-transform: uppercase;
+  }
+
+
+  /* ============================================================
+     RIGHT MESSAGE
+     ============================================================ */
+
+  .spay-right-message {
+    position: absolute;
+
+    right: 10mm;
+    top: 45mm;
+
+    width: 39mm;
+
+    z-index: 25;
+
+    color: #0874e8;
+
+    font-family:
+      "Brush Script MT",
+      "Segoe Script",
+      cursive;
+
+    font-size: 6.5mm;
+
+    line-height: 1.2;
+
+    font-weight: 500;
+
+    transform: rotate(-7deg);
+
+    text-align: left;
+  }
+
+  .spay-script {
+    margin: 0;
+    padding: 0;
+  }
+
+  .spay-script-underline {
+    position: relative;
+
+    width: 31mm;
+
+    height: 2mm;
+
+    margin-left: 3mm;
+    margin-top: 0.5mm;
+
+    border-bottom: 0.6mm solid #0874e8;
+
+    border-radius: 50%;
+
+    transform: rotate(-5deg);
+  }
+
+
+  /* ============================================================
+     SUPPORTED UPI APPS
+     ============================================================ */
+
+  .spay-supported-section {
+    position: relative;
+
+    z-index: 15;
+
+    width: 184mm;
+
+    height: 42mm;
+
+    margin: 4mm auto 0;
+
+    padding: 4.5mm 8mm;
+
+    border-radius: 7mm;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.98),
+        rgba(247, 251, 255, 0.98)
+      );
+
+    border: 0.3mm solid #e8eef6;
+
+    box-shadow:
+      0 3mm 10mm rgba(16, 46, 104, 0.05);
+
+    box-sizing: border-box;
+  }
+
+
+  /* ------------------------------------------------------------
+     UPI HEADING
+     ------------------------------------------------------------ */
+
+  .spay-supported-heading {
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 4.5mm;
+
+    margin: 0 0 4.5mm;
+
+    color: #102e68;
+  }
+
+  .spay-supported-heading span {
+    display: block;
+
+    width: 17mm;
+
+    height: 0.3mm;
+
+    background: #8798aa;
+  }
+
+  .spay-supported-heading strong {
+    font-size: 3.4mm;
+
+    line-height: 1;
+
+    font-weight: 800;
+
+    letter-spacing: 0.85mm;
+
+    color: #102e68;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+  }
+
+
+  /* ------------------------------------------------------------
+     APP ROW
+     ------------------------------------------------------------ */
+
+  .spay-apps {
+    width: 100%;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+  }
+
+  .spay-app {
+    width: 27mm;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+  }
+
+  .spay-app-circle {
+    width: 17mm;
+    height: 17mm;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    border: 0.3mm solid #eef2f7;
+
+    box-shadow:
+      0 2mm 6mm rgba(16, 46, 104, 0.08);
+
+    overflow: hidden;
+
+    flex-shrink: 0;
+  }
+
+
+  /* ------------------------------------------------------------
+     APP ICONS
+     ------------------------------------------------------------ */
+
+  .spay-gpay-icon,
+  .spay-phonepe-icon,
+  .spay-amazon-icon,
+  .spay-upi-icon {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 12mm;
+    height: 12mm;
+
+    border-radius: 50%;
+
+    font-weight: 900;
+  }
+
+  .spay-gpay-icon {
+    font-family: Arial, sans-serif;
+
+    font-size: 7mm;
+
+    color: #4285f4;
+  }
+
+  .spay-phonepe-icon {
+    font-size: 5mm;
+
+    color: #5f259f;
+
+    font-weight: 800;
+  }
+
+  .spay-bhim-icon {
+    width: 12mm;
+    height: 12mm;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #f3f8ff;
+
+    color: #1687ed;
+
+    font-size: 6mm;
+
+    font-weight: 900;
+  }
+
+  .spay-amazon-icon {
+    font-family: Arial, sans-serif;
+
+    font-size: 8mm;
+
+    color: #111111;
+
+    font-weight: 700;
+  }
+
+  .spay-upi-icon {
+    width: auto;
+    height: auto;
+
+    border-radius: 0;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 4.3mm;
+
+    color: #102e68;
+
+    letter-spacing: 0.2mm;
+  }
+
+  .spay-app-name {
+    margin-top: 2.2mm;
+
+    font-size: 2.8mm;
+
+    line-height: 1.1;
+
+    font-weight: 600;
+
+    color: #102e68;
+
+    white-space: nowrap;
+  }
+
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+
+  .spay-footer {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 100%;
+
+    height: 56mm;
+
+    overflow: hidden;
+
+    background:
+      linear-gradient(
+        145deg,
+        #063a80 0%,
+        #0756ad 52%,
+        #033675 100%
+      );
+
+    z-index: 5;
+  }
+
+
+  /* ------------------------------------------------------------
+     WHITE CURVE
+     ------------------------------------------------------------ */
+
+  .spay-footer::before {
+    content: "";
+
+    position: absolute;
+
+    left: -15mm;
+    top: -18mm;
+
+    width: 245mm;
+    height: 40mm;
+
+    background: #ffffff;
+
+    border-radius: 50%;
+
+    transform: rotate(-2deg);
+
+    z-index: 1;
+  }
+
+
+  /* ------------------------------------------------------------
+     BLUE CURVE
+     ------------------------------------------------------------ */
+
+  .spay-footer::after {
+    content: "";
+
+    position: absolute;
+
+    left: -15mm;
+    top: -10mm;
+
+    width: 245mm;
+    height: 28mm;
+
+    border-top: 2mm solid #1594ef;
+
+    border-radius: 50%;
+
+    transform: rotate(-2deg);
+
+    z-index: 2;
+  }
+
+
+  /* ============================================================
+     FOOTER CONTENT
+     ============================================================ */
+
+  .spay-footer-content {
+    position: absolute;
+
+    top: 17mm;
+
+    left: 0;
+    right: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 13mm;
+
+    z-index: 10;
+  }
+
+  .spay-footer-block {
+    width: 55mm;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 4mm;
+
+    color: #ffffff;
+  }
+
+  .spay-footer-block svg {
+    width: 11mm;
+    height: 11mm;
+
+    flex-shrink: 0;
+  }
+
+  .spay-footer-block > div:last-child {
+    font-size: 2.8mm;
+
+    line-height: 1.6;
+
+    font-weight: 600;
+
+    letter-spacing: 0.65mm;
+
+    color: #ffffff;
+
+    text-transform: uppercase;
+  }
+
+
+  /* ------------------------------------------------------------
+     FOOTER DIVIDER
+     ------------------------------------------------------------ */
+
+  .spay-footer-divider {
+    width: 0.3mm;
+
+    height: 14mm;
+
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+
+  /* ============================================================
+     FOOTER LOGO
+     ============================================================ */
+
+  .spay-footer-mark {
+    position: absolute;
+
+    left: 50%;
+
+    bottom: 10mm;
+
+    transform: translateX(-50%);
+
+    width: 15mm;
+
+    z-index: 10;
+  }
+
+  .spay-footer-mark img {
+    display: block;
+
+    width: 15mm;
+
+    height: auto;
+
+    object-fit: contain;
+  }
+
+
+  /* ============================================================
+     WEBSITE
+     ============================================================ */
+
+  .spay-website {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    bottom: 5.5mm;
+
+    z-index: 20;
+
+    text-align: center;
+
+    font-size: 3.3mm;
+
+    line-height: 1;
+
+    font-weight: 500;
+
+    letter-spacing: 1.5mm;
+
+    color: #ffffff;
+
+    text-transform: lowercase;
+  }
+
+
+  /* ============================================================
+     PRINT SAFETY 
+     ============================================================ */
+
+  .spay-print-page,
+  .spay-main-content,
+  .spay-qr-card,
+  .spay-supported-section,
+  .spay-footer {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+
+
+/* ============================================================
+   SCREEN SAFETY
+   ============================================================ */
+
+@media screen {
+
+  .spay-print-only {
+    display: none !important;
+  }
+}

@@ -93,7 +93,7 @@ const PaymentConfirmation = () => {
       headerBg="bg-white"
       headerTextColor="text-green-600"
       renderHeader={
-        <span className="font-semibold text-lg">Transaction Successful</span>
+        <span className="font-semibold text-lg">Transaction Successful..!</span>
       }
       renderMiddle={
         <div ref={printRef}>

@@ -42,14 +42,15 @@ export function usePost(endpoint) {
       }
 
       if (
-        // endpoint === "/send-mobile-otp" ||
-        // endpoint === "/verify-mobile-otp" ||
         endpoint === "/otp/send-custom-mobile" ||
         endpoint === "/otp/verify-otp" ||
-        endpoint === "/send-mail-otp" ||
-        endpoint === "/verify-mail-otp" ||
-        endpoint === "/register-new-merchant" ||
-        endpoint === "/self-merchant-onboard-process"
+        endpoint === "/beneficiary/send-verification-otp" ||
+        endpoint === "/beneficiary/verify-otp" ||
+        // endpoint === "/send-mail-otp" ||
+        // endpoint === "/verify-mail-otp" ||
+        // endpoint === "/register-new-merchant" ||
+        endpoint === "/self-merchant-onboard-process" ||
+        endpoint === "/qr/payment/create"
       ) {
         const isFormData =
           typeof FormData !== "undefined" && body instanceof FormData;
@@ -78,6 +79,21 @@ export function usePost(endpoint) {
         return response;
       }
 
+      if (endpoint === "/delete-Beneficiary") {
+        response = await axios.post(
+          `${BASE_URL}${endpoint}/${body}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${bearerToken}`,
+            },
+          },
+        );
+
+        setData(response.data);
+        return response.data;
+      }
+
       if (endpoint === "/delete-scheme") {
         response = await axios.post(
           `${BASE_URL}${endpoint}/${body}`,
@@ -100,7 +116,7 @@ export function usePost(endpoint) {
       response = await axios.post(`${BASE_URL}${endpoint}`, body, {
         headers: {
           Authorization: `Bearer ${bearerToken}`,
-          ...(isFormData ? {} : { "Content-Type": "application/json" }), // ❗ Correct logic
+          ...(isFormData ? {} : { "Content-Type": "application/json" }), //  Correct logic
         },
       });
       setData(response.data);

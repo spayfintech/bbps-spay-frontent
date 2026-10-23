@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
-import placeholderImg from "../../images/Spaylogo.png";
-import BillAvenuelogo from "../../images/BillAvenuelogo.png";
 import { useGet } from "../../hooks/useGet";
 import { usePost } from "../../hooks/usePost";
 import { useServicesContext } from "../../contexts/ServicesAuthContext";
@@ -33,7 +31,7 @@ const SelectServiceBiller = () => {
     `/bbps/biller-info${testEnv}/json`,
   );
   const handleCancel = (close) => {
-    window.location.reload(true);
+    // window.location.reload(true);
     close();
   };
   useEffect(() => {
@@ -113,7 +111,6 @@ const SelectServiceBiller = () => {
       resetOnClose={resetForm}
       renderHeader={
         <>
-          <img src={placeholderImg} alt="Logo" className="h-7" />
           <span className="font-semibold text-xl ml-2">
             Select {service?.label || "Biller"}
           </span>
@@ -121,14 +118,6 @@ const SelectServiceBiller = () => {
       }
       renderMiddle={
         <>
-          <div className="flex justify-end mb-4">
-            <img
-              src={BillAvenuelogo}
-              alt="Bill Avenue"
-              className="h-4 object-contain"
-            />
-          </div>
-
           {billerOptions.length > 0 ? (
             <Select
               options={billerOptions}

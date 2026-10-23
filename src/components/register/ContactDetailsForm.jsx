@@ -13,6 +13,8 @@ const ContactDetailsForm = ({ onNext }) => {
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
 
+  const { execute: saveContact } = usePost("/merchant-onboarding/save-contact");
+
   const { execute: sendOtp, loading: sendingOtp } = usePost(
     "/otp/send-custom-mobile",
   );
@@ -63,7 +65,37 @@ const ContactDetailsForm = ({ onNext }) => {
       ) {
         setOtpVerified(true);
 
-        toast.success("Mobile number verified.");
+        const merchant = await saveContact({
+          contact_name: fullName,
+          business_name: businessName,
+          mobile,
+          email,
+          business_type: businessType,
+          gst_number: gstNumber || null,
+
+          registered_address:
+            registeredAddress + ", " + registeredCity + " - " + registeredPin,
+
+          residential_address: sameAddress
+            ? registeredAddress + ", " + registeredCity + " - " + registeredPin
+            : residentialAddress +
+              ", " +
+              residentialCity +
+              " - " +
+              residentialPin,
+        });
+
+        if (merchant.status !== "success") {
+          toast.error("Unable to save contact details.");
+          return;
+        }
+
+        sessionStorage.setItem(
+          "merchant_onboarding_id",
+          merchant.merchant_onboarding_id,
+        );
+
+        toast.success("Contact Details Saved Successfully");
 
         setTimeout(() => {
           onNext();
@@ -99,7 +131,9 @@ const ContactDetailsForm = ({ onNext }) => {
   //validation
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
+  const [businessName, setBusinessName] = useState("");
   const [businessType, setBusinessType] = useState("");
+  const [gstNumber, setGstNumber] = useState("");
 
   const [registeredAddress, setRegisteredAddress] = useState("");
   const [registeredCity, setRegisteredCity] = useState("");
@@ -115,7 +149,11 @@ const ContactDetailsForm = ({ onNext }) => {
 
   const mobileRegex = /^[6-9]\d{9}$/;
 
+  const gstRegex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
+
   const nameRegex = /^[A-Za-z ]{3,50}$/;
+
+  const businessNameRegex = /^[A-Za-z0-9&.,'()\- ]{3,100}$/;
 
   const pinRegex = /^[1-9][0-9]{5}$/;
 
@@ -128,6 +166,10 @@ const ContactDetailsForm = ({ onNext }) => {
       newErrors.mobile = "Enter a valid mobile number.";
     }
 
+    if (gstNumber.trim() && !gstRegex.test(gstNumber.toUpperCase())) {
+      newErrors.gstNumber = "Enter a valid GST number.";
+    }
+
     if (!email.trim()) {
       newErrors.email = "Email is required.";
     } else if (!emailRegex.test(email)) {
@@ -138,6 +180,12 @@ const ContactDetailsForm = ({ onNext }) => {
       newErrors.fullName = "Contact person name is required.";
     } else if (!nameRegex.test(fullName)) {
       newErrors.fullName = "Enter a valid contact person name.";
+    }
+
+    if (!businessName.trim()) {
+      newErrors.businessName = "Shop name is required.";
+    } else if (!businessNameRegex.test(businessName)) {
+      newErrors.businessName = "Enter a valid Shop name.";
     }
 
     if (!businessType) {
@@ -198,6 +246,33 @@ const ContactDetailsForm = ({ onNext }) => {
       </p>
 
       <div className="space-y-5">
+        {/* Full Name */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Full Name
+          </label>
+
+          <input
+            type="text"
+            value={fullName}
+            onChange={(e) => {
+              setFullName(e.target.value);
+              setErrors((prev) => ({ ...prev, fullName: "" }));
+            }}
+            placeholder="Enter your full name"
+            className={`w-full h-11 rounded-md px-4 outline-none transition
+            ${
+              errors.fullName
+                ? "border border-red-500"
+                : "border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            }`}
+          />
+
+          {errors.fullName && (
+            <p className="mt-1 text-xs text-red-500">{errors.fullName}</p>
+          )}
+        </div>
+
         {/* Mobile Number */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
@@ -253,30 +328,29 @@ const ContactDetailsForm = ({ onNext }) => {
           )}
         </div>
 
-        {/* Full Name */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            Full Name
+            Shop Name
           </label>
 
           <input
             type="text"
-            value={fullName}
+            value={businessName}
             onChange={(e) => {
-              setFullName(e.target.value);
-              setErrors((prev) => ({ ...prev, fullName: "" }));
+              setBusinessName(e.target.value);
+              setErrors((prev) => ({ ...prev, businessName: "" }));
             }}
-            placeholder="Enter your full name"
+            placeholder="Enter your Shop name"
             className={`w-full h-11 rounded-md px-4 outline-none transition
             ${
-              errors.fullName
+              errors.businessName
                 ? "border border-red-500"
                 : "border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
             }`}
           />
 
-          {errors.fullName && (
-            <p className="mt-1 text-xs text-red-500">{errors.fullName}</p>
+          {errors.businessName && (
+            <p className="mt-1 text-xs text-red-500">{errors.businessName}</p>
           )}
         </div>
 
@@ -319,8 +393,41 @@ const ContactDetailsForm = ({ onNext }) => {
           )}
         </div>
 
-        {/* Registered Address */}
+        {/* GST Number */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            GST Number
+            <span className="text-red-500 text-sm font-normal">
+              {" "}
+              (optional)
+            </span>
+          </label>
 
+          <input
+            type="text"
+            value={gstNumber}
+            maxLength={15}
+            onChange={(e) => {
+              setGstNumber(
+                e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""),
+              );
+              setErrors((prev) => ({ ...prev, gstNumber: "" }));
+            }}
+            placeholder="Enter GST number"
+            className={`w-full h-11 rounded-md px-4 outline-none transition
+            ${
+              errors.gstNumber
+                ? "border border-red-500"
+                : "border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            }`}
+          />
+
+          {errors.gstNumber && (
+            <p className="mt-1 text-xs text-red-500">{errors.gstNumber}</p>
+          )}
+        </div>
+
+        {/* Registered Address */}
         <div className="pt-2">
           <h3 className="text-base font-semibold text-slate-900 mb-4">
             Registered Address
@@ -421,7 +528,6 @@ const ContactDetailsForm = ({ onNext }) => {
         </div>
 
         {/* Residential Address */}
-
         <div className="pt-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-semibold text-slate-900">

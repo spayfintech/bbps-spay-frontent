@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import Bconnectlogo from "../images/bharatconnect.png";
+import placeholderImg from "../images/Spaylogowhite.png";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export const ServicesModalWrapper = ({
   isOpen,
@@ -15,14 +17,27 @@ export const ServicesModalWrapper = ({
   const modalRef = useRef();
   const [isClosing, setIsClosing] = useState(false);
 
-  const handleClose = () => { if (resetOnClose) resetOnClose(); setIsClosing(true); setTimeout(() => { setIsClosing(false); onClose(); }, 250); };
+  const handleClose = () => {
+    if (resetOnClose) resetOnClose();
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 250);
+  };
 
   const [isCentered, setIsCentered] = useState(false);
   useEffect(() => {
     if (!isOpen || !isCentered) return; // Only attach if modal is open and centered
-    const handleClickOutside = (e) => { if (modalRef.current && !modalRef.current.contains(e.target)) { handleClose(); } };
+    const handleClickOutside = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        handleClose();
+      }
+    };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => { document.removeEventListener("mousedown", handleClickOutside); };
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [isOpen, isCentered]);
 
   useEffect(() => {
@@ -48,25 +63,39 @@ export const ServicesModalWrapper = ({
 
   return (
     <div
-      className={`absolute inset-0 z-50 overflow-y-auto bg-black/40 ${isClosing ? "animate-fade-out" : "animate-fade-in"
-        } ${outerClasses}`}
+      className={`absolute inset-0 z-50 overflow-y-auto bg-black/40 ${
+        isClosing ? "animate-fade-out" : "animate-fade-in"
+      } ${outerClasses}`}
     >
       <div
         ref={modalRef}
-        className={`bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4 transform ${isClosing ? "animate-fly-out" : "animate-fly-in"
-          }`}
+        className={`bg-white rounded-lg shadow-2xl w-full max-w-2xl mx-4 transform ${
+          isClosing ? "animate-fly-out" : "animate-fly-in"
+        }`}
       >
         {/* Header */}
 
-        <div className={`flex justify-between items-center px-4 py-8 ${headerBg} ${headerTextColor} rounded-t-lg`}>
+        <div
+          className={`flex justify-between items-center px-4 py-4 ${headerBg} ${headerTextColor} rounded-t-lg`}
+        >
           {/* <span className="font-semibold text-4xl">{title}</span> */}
+          <img
+            src={placeholderImg}
+            alt="Spay Fintech"
+            className="h-10 w-auto object-contain"
+          />
           {renderHeader}
-          <button
+          {/* <button
             onClick={handleClose}
             className="p-1 rounded-full hover:bg-white/20"
           >
             <FontAwesomeIcon icon={faTimes} />
-          </button>
+          </button> */}
+          <img
+            src={Bconnectlogo}
+            alt="Spay Fintech"
+            className="h-9 w-auto object-contain"
+          />
         </div>
 
         {/* Body */}

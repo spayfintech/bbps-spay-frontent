@@ -19,7 +19,7 @@ export function useGet(endpoint) {
     try {
       if (!byID) {
         // Normal fetch
-          const response = await axios.get(`${BASE_URL}${endpoint}`, {
+        const response = await axios.get(`${BASE_URL}${endpoint}`, {
           headers: {
             Authorization: `Bearer ${cookie.token}`,
           },
@@ -27,7 +27,7 @@ export function useGet(endpoint) {
         setData(response.data);
       } else {
         // Fetch with ID
-        
+
         const response = await axios.get(`${BASE_URL}${endpoint}/${byID}`, {
           headers: {
             Authorization: `Bearer ${cookie.token}`,

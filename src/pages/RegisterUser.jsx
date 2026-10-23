@@ -52,7 +52,7 @@ const RegisterUser = () => {
     "Contact Details",
     "Identity Verification",
     "Bank Account",
-    "Document upload",
+    "Terms & Conditions",
   ];
 
   const [currentStep, setCurrentStep] = useState(1);

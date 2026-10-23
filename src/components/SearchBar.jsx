@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import { FaFileExcel, FaFilePdf, FaSyncAlt, FaSearch } from "react-icons/fa";
 
@@ -13,13 +11,25 @@ const SearchBar = ({
   filterFields,
 }) => {
   return (
-    <div className="bg-white/70 backdrop-blur-md border border-gray-200 p-6 rounded-2xl shadow-lg mb-6 transition-all duration-300">
+    <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm mb-6 transition-all duration-300">
       {/* Filter Inputs + Search Button */}
       <div className="flex flex-wrap items-end gap-4 justify-between">
         <div className="flex flex-wrap gap-4 items-end">
           {filterFields.map((field) => (
-            <div key={field.name} className="flex flex-col w-40 sm:w-44 md:w-48">
-              <label className="text-gray-700 font-medium text-sm mb-1">{field.label}</label>
+            <div
+              key={field.name}
+              className="flex flex-col min-w-[180px] flex-1 xl:max-w-[220px]"
+            >
+              <label
+                className="mb-2
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-wide
+                  text-slate-500 mb-1"
+              >
+                {field.label}
+              </label>
 
               {field.type === "date" ? (
                 <input
@@ -27,22 +37,56 @@ const SearchBar = ({
                   name={field.name}
                   value={filters[field.name]}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-gray-700 text-sm shadow-sm 
-                             focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 focus:border-transparent 
-                             hover:shadow-md hover:scale-[1.02] transition-all duration-300"
+                  className="
+                    h-11
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-slate-50
+                    px-4
+                    text-sm
+                    text-slate-700
+                    placeholder:text-slate-400
+                    outline-none
+                    transition
+                    focus:border-blue-500
+                    focus:bg-white
+                    focus:ring-4
+                    focus:ring-blue-100
+                  "
                 />
               ) : field.type === "select" ? (
                 <select
                   name={field.name}
                   value={filters[field.name]}
                   onChange={handleChange}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-gray-700 text-sm shadow-sm 
-                             focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 focus:border-transparent 
-                             hover:shadow-md hover:scale-[1.02] transition-all duration-300"
+                  className="
+                    h-11
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-slate-50
+                    px-4
+                    text-sm
+                    text-slate-700
+                    placeholder:text-slate-400
+                    outline-none
+                    transition
+                    focus:border-blue-500
+                    focus:bg-white
+                    focus:ring-4
+                    focus:ring-blue-100
+                  "
                 >
-                  <option value="">{field.placeholder || `Select ${field.label}`}</option>
+                  <option value="">
+                    {field.placeholder || `Select ${field.label}`}
+                  </option>
                   {field.options.map((option) => (
-                    <option key={option} value={option}>{option}</option>
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
                   ))}
                 </select>
               ) : (
@@ -52,9 +96,24 @@ const SearchBar = ({
                   value={filters[field.name]}
                   onChange={handleChange}
                   placeholder={field.placeholder || `Enter ${field.label}...`}
-                  className="border border-gray-300 rounded-lg px-3 py-2 text-gray-700 text-sm shadow-sm 
-                             focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50 focus:border-transparent 
-                             hover:shadow-md hover:scale-[1.02] transition-all duration-300"
+                  className="
+                    h-11
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-slate-50
+                    px-4
+                    text-sm
+                    text-slate-700
+                    placeholder:text-slate-400
+                    outline-none
+                    transition
+                    focus:border-blue-500
+                    focus:bg-white
+                    focus:ring-4
+                    focus:ring-blue-100
+                  "
                 />
               )}
             </div>
@@ -63,8 +122,21 @@ const SearchBar = ({
           {/* Search Button */}
           <button
             onClick={handleSearch}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-5 py-2.5 rounded-xl shadow-md 
-                       hover:from-blue-600 hover:to-blue-700 hover:shadow-lg transition-transform duration-300 transform hover:scale-105"
+            className="
+              flex
+              h-11
+              items-center
+              gap-2
+              rounded-xl
+              bg-blue-600
+              px-5
+              text-sm
+              font-medium
+              text-white
+              transition
+              hover:bg-blue-700
+              cursor-pointer
+            "
           >
             <FaSearch className="text-base" /> Search
           </button>
@@ -73,22 +145,37 @@ const SearchBar = ({
           {handleReset && (
             <button
               onClick={handleReset}
-              title="Reset Filters"
-              className="text-gray-500 hover:text-blue-600 text-xl transition-transform transform hover:rotate-180 duration-300"
+              className="
+                flex
+                h-11
+                items-center
+                gap-2
+                rounded-xl
+                border
+                border-slate-200
+                bg-white
+                px-5
+                text-sm
+                font-medium
+                text-slate-600
+                transition
+                hover:bg-slate-50
+              "
             >
-              <FaSyncAlt />
+              <FaSyncAlt size={13} />
+              Reset
             </button>
           )}
         </div>
       </div>
 
       {/* Export Buttons */}
-      <div className="flex flex-wrap justify-end gap-3 mt-4">
+      <div className="flex flex-wrap justify-end gap-3">
         {exportExcel && (
           <button
             onClick={exportExcel}
             className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-xl shadow-sm 
-                       hover:from-green-600 hover:to-green-700 hover:shadow-md transition-transform duration-300 transform hover:scale-105"
+                       hover:from-green-600 hover:to-green-700 hover:shadow-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
           >
             <FaFileExcel className="text-base" /> Excel
           </button>
@@ -97,7 +184,7 @@ const SearchBar = ({
           <button
             onClick={exportPDF}
             className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl shadow-sm 
-                       hover:from-red-600 hover:to-red-700 hover:shadow-md transition-transform duration-300 transform hover:scale-105"
+                       hover:from-red-600 hover:to-red-700 hover:shadow-md transition-transform duration-300 transform hover:scale-105 cursor-pointer"
           >
             <FaFilePdf className="text-base" /> PDF
           </button>
@@ -108,4 +195,3 @@ const SearchBar = ({
 };
 
 export default SearchBar;
-

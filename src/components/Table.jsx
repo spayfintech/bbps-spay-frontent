@@ -51,7 +51,7 @@ const Table = ({
 
   // Header
   const defaultHeaderClass =
-    "bg-[#F8FAFC] text-[#64748B] text-[12px] font-semibold uppercase border-b border-[#EEF2F7]";
+    "bg-gradient-to-b from-slate-50 to-white text-[#64748B] text-[12px] font-semibold uppercase border-b border-[#EEF2F7]";
 
   // Rows
   const defaultRowClass =
@@ -59,11 +59,11 @@ const Table = ({
 
   // Cells
   const defaultCellClass =
-    "px-4 py-3.5 text-[13px] text-[#0F172A] whitespace-nowrap";
+    "px-6 py-4 text-[13px] text-[#0F172A] whitespace-nowrap";
 
   // Pagination
   const defaultPaginationClass =
-    "flex justify-between items-center px-4 py-4 border-t border-[#EEF2F7]";
+    "flex items-center justify-between px-6 py-5 border-t border-slate-200 items-center px-4 py-4 border-t border-[#EEF2F7]";
 
   const defaultPaginationBtnClass =
     "flex items-center gap-1 bg-[#2563EB] text-white px-3 py-2 rounded-xl hover:bg-[#1D4ED8] disabled:opacity-40 transition-all text-[12px] font-medium cursor-pointer";
@@ -81,7 +81,7 @@ const Table = ({
               {columns.map((col, idx) => (
                 <th
                   key={typeof col === "string" ? col : col.key || idx}
-                  className="px-3 sm:px-4 py-2 "
+                  className="px-6 py-4 text-left"
                 >
                   {getColumnLabel(col)}
                 </th>
@@ -134,7 +134,7 @@ const Table = ({
                 className={
                   page === currentPage
                     ? paginationActiveClass || defaultPaginationActiveClass
-                    : "px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-blue-200 transition-all"
+                    : "px-3 py-1 rounded-xl border border-slate-200 bg-white text-sm font-medium bg-gray-100 text-gray-700 hover:bg-blue-200 transition-all"
                 }
               >
                 {page}

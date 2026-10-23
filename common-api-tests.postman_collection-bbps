@@ -25,7 +25,7 @@
               }
             },
             "url": {
-              "raw": "https://demo1.spay.live/dashboardbbps/api/bbps/fetch-biller-info/xml",
+              "raw": "https://demo1.spay.live/services/api/bbps/fetch-biller-info/xml",
               "protocol": "https",
               "host": [
                 "demo1",
@@ -33,7 +33,7 @@
                 "live"
               ],
               "path": [
-                "dashboardbbps",
+                "services",
                 "api",
                 "bbps",
                 "fetch-biller-info",

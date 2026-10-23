@@ -1,117 +1,63 @@
-// import { createContext, useContext, useState, useEffect } from "react";
-// import useGet from "../hooks/useGet";
-
-// const AuthContext = createContext();
-
-// export const AuthProvider = ({ children }) => {
-//   const { data, loading, error, fetchData } = useGet();
-//   const [user, setUser] = useState(null);
-
-//   useEffect(() => {
-//     const token = localStorage.getItem("token");
-//     if (!token) return;
-
-//     fetchData("/auth/me", {
-//       headers: { Authorization: `Bearer ${token}` }
-//     });
-//   }, []);
-
-//   // When the API returns user data, update context
-//   useEffect(() => {
-//     if (data) {
-//       setUser(data);
-//     }
-//   }, [data]);
-
-//   // If token is invalid → remove it
-//   useEffect(() => {
-//     if (error) {
-//       localStorage.removeItem("token");
-//     }
-//   }, [error]);
-
-//   return (
-//     <AuthContext.Provider value={{ user, loading }}>
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// };
-
-// export const useAuth = () => useContext(AuthContext);
-
-
-
 import { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { useCookies } from "react-cookie";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  
-  const [dataStore, setDataStore] = useState({});
+  const [cookie, , removeCookie] = useCookies(["token", "role", "user"]);
+  const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-  // On refresh: load token and default user
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      setUser({
-        name: "Dummy User",
-        role: "user",
-      });
+  const fetchProfile = async (token = cookie.token) => {
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
     }
-  }, []);
 
-  // --- Authentication Functions ---
+    try {
+      setLoading(true);
 
-  const login = ({ username }) => {
-    localStorage.setItem("token", "dummy_token_123");
+      const response = await axios.get(`${BASE_URL}/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    const fakeUser = {
-      name: username,
-      role: "user",
-    };
+      setUser(response.data.user);
+    } catch (error) {
+      console.error(error);
 
-    setUser(fakeUser);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    removeCookie("token", { path: "/" });
+    removeCookie("role", { path: "/" });
+    removeCookie("user", { path: "/" });
+
     setUser(null);
+    setLoading(false);
   };
 
-  // --- Generic Data Management Functions (from AdminContext) ---
-
-  // Get value by key
-  const getData = (key) => dataStore[key];
-
-  // Set/update value by key
-  const setData = (key, value) => {
-    setDataStore((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
-  };
-
-  // Delete a key/value
-  const deleteData = (key) => {
-    setDataStore((prev) => {
-      const { [key]: removed, ...rest } = prev;
-      return rest;
-    });
-  };
+  useEffect(() => {
+    fetchProfile();
+  }, [cookie.token]);
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        login,
+        setUser,
+        loading,
+        fetchProfile,
         logout,
-        dataStore,
-        getData,
-        setData,
-        deleteData,
       }}
     >
       {children}

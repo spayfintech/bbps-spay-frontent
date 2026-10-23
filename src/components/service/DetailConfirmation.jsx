@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useCookies } from "react-cookie";
 import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
-import placeholderImg from "../../images/Spaylogo.png";
-import BillAvenuelogo from "../../images/BillAvenuelogo.png";
+import Spayspay from "../../images/spayspay.png";
 import { usePost } from "../../hooks/usePost";
 import { useServicesContext } from "../../contexts/ServicesAuthContext";
 import ErrorToast from "../ErrorToast";
@@ -25,13 +25,42 @@ const DetailConfirmation = () => {
   const [acceptAmount, setAcceptAmount] = useState(false);
   const [userDataRequire, setUserDataRequire] = useState(false);
 
+  const [cookies] = useCookies(["user"]);
+  // const paymentMode = cookies?.user?.payment_mode ?? "QR";
+  // const isQrPayment = paymentMode === "QR";
+  const PAYMENT_MODE = {
+    QR: "QR",
+    DIRECT: "DIRECT",
+  };
+
+  const paymentMode = cookies?.user?.payment_mode ?? PAYMENT_MODE.QR;
+  const isQrPayment = paymentMode === PAYMENT_MODE.QR;
+
+  // const [qrPaymentSuccess, setQrPaymentSuccess] = useState(false);
+  // // const canSubmit = isQrPayment ? qrPaymentSuccess : true;
+  // const canSubmit = isQrPayment
+  //   ? qrPaymentSuccess
+  //   : Boolean(userData?.remitterName?.trim() && userData?.remarks?.trim());
+
+  // const [formValues, setFormValues] = useState({
+  //   amount: "",
+  //   customerPan: "",
+  // });
+
+  // const [userData, setUserData] = useState({});
+  const [qrPaymentSuccess, setQrPaymentSuccess] = useState(false);
+
   const [formValues, setFormValues] = useState({
     amount: "",
     customerPan: "",
   });
 
   const [userData, setUserData] = useState({});
-  const [qrPaymentSuccess, setQrPaymentSuccess] = useState(false);
+
+  const canSubmit = isQrPayment
+    ? qrPaymentSuccess
+    : Boolean(userData?.remitterName?.trim() && userData?.remarks?.trim());
+
   const [isPanInputDisplay, setIsPanInputDisplay] = useState(false);
 
   const {
@@ -41,6 +70,9 @@ const DetailConfirmation = () => {
   } = usePost(`/bbps/bill-payment${testEnv}/json`);
 
   const [resError, setResError] = useState();
+
+  // console.log("Cookies User:", cookies.user);
+  // console.log("Payment Mode:", cookies?.user?.payment_mode);
 
   // ---------------- HANDLE API ERRORS ----------------
   useEffect(() => {
@@ -171,11 +203,17 @@ const DetailConfirmation = () => {
   };
 
   const handleCancel = (close) => {
-    window.location.reload(true);
+    // window.location.reload(true);
     close();
   };
 
   // ---------------- EXECUTE PAYMENT ----------------
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+
+    handlePay();
+  };
+
   const handlePay = async () => {
     // return;
     const response = await fetchPayment(finalMergedData);
@@ -210,11 +248,26 @@ const DetailConfirmation = () => {
     });
   };
 
-  useEffect(() => {
-    if (qrPaymentSuccess && userData?.remitterName && userData?.remarks) {
-      handlePay();
-    }
-  }, [qrPaymentSuccess, userData?.remitterName, userData?.remarks]);
+  // useEffect(() => {
+  //   if (qrPaymentSuccess && userData?.remitterName && userData?.remarks) {
+  //     handlePay();
+  //   }
+  // }, [qrPaymentSuccess, userData?.remitterName, userData?.remarks]);
+  // useEffect(() => {
+  //   if (
+  //     isQrPayment &&
+  //     qrPaymentSuccess &&
+  //     userData?.remitterName &&
+  //     userData?.remarks
+  //   ) {
+  //     handlePay();
+  //   }
+  // }, [
+  //   isQrPayment,
+  //   qrPaymentSuccess,
+  //   userData?.remitterName,
+  //   userData?.remarks,
+  // ]);
 
   return (
     <ServicesModalWrapper
@@ -222,7 +275,6 @@ const DetailConfirmation = () => {
       onClose={() => closeModal("finalData")}
       renderHeader={
         <>
-          <img src={placeholderImg} alt="logo" className="h-7 mx-auto" />
           <p className="text-center text-lg mt-1 font-semibold">
             Are you sure you want to proceed?
           </p>
@@ -230,14 +282,6 @@ const DetailConfirmation = () => {
       }
       renderMiddle={
         <>
-          <div className="flex justify-end mb-2">
-            <img
-              src={BillAvenuelogo}
-              alt="Bill Avenue"
-              className="h-4 object-contain"
-            />
-          </div>
-
           {/* Amount Field */}
           {acceptAmount && (
             <div className="mt-4">
@@ -311,34 +355,43 @@ const DetailConfirmation = () => {
                 amount={acceptAmount ? formValues.amount : null}
               /> */}
 
-              <BBPSQrSection
-                dynamicRows={dynamicRows}
-                custData={custData}
-                userData={userData}
-                amount={acceptAmount ? formValues.amount : null}
-                // onPaymentSuccess={(paymentData) => {
-                //   setUserData((prev) => ({
-                //     ...prev,
-                //     remitterName: paymentData.amount,
-                //     remarks: paymentData.message,
-                //   }));
+              {isQrPayment ? (
+                <BBPSQrSection
+                  dynamicRows={dynamicRows}
+                  custData={custData}
+                  userData={userData}
+                  amount={acceptAmount ? formValues.amount : null}
+                  // onPaymentSuccess={(paymentData) => {
+                  //   setUserData((prev) => ({
+                  //     ...prev,
+                  //     remitterName: paymentData.amount,
+                  //     remarks: paymentData.message,
+                  //   }));
 
-                //   setQrPaymentSuccess(true);
-                // }}
-                onPaymentSuccess={(paymentData) => {
-                  setUserData((prev) => ({
-                    ...prev,
-                    // remitterName: paymentData.amount,
-                    remitterName: paymentData.rrn,
-                    remarks: paymentData.message,
-                  }));
+                  //   setQrPaymentSuccess(true);
+                  // }}
+                  onPaymentSuccess={(paymentData) => {
+                    setUserData((prev) => ({
+                      ...prev,
+                      // remitterName: paymentData.amount,
+                      remitterName: paymentData.rrn,
+                      remarks: paymentData.message,
+                    }));
 
-                  setQrPaymentSuccess(true);
-                }}
-              />
+                    setQrPaymentSuccess(true);
+                  }}
+                />
+              ) : (
+                // <div className="flex items-center justify-center h-full min-h-[350px] border rounded-lg bg-gray-50"></div>
+                <img
+                  src={Spayspay}
+                  alt="Spay Logo"
+                  className="w-90 opacity-70 pt-5"
+                />
+              )}
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg shadow-sm border">
+            <div className="bg-gray-10 p-4 rounded-lg shadow-sm">
               <h3 className="font-semibold text-lg mb-3 text-gray-800">
                 Customer Details
               </h3>
@@ -399,12 +452,27 @@ const DetailConfirmation = () => {
                   className="w-full border p-2 rounded cursor-not-allowed"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 /> */}
+                {/* <input
+                  type="text"
+                  name="remitterName"
+                  value={userData?.remitterName || ""}
+                  disabled={isQrPayment}
+                  className="w-full border p-2 rounded cursor-not-allowed"
+                /> */}
                 <input
                   type="text"
                   name="remitterName"
                   value={userData?.remitterName || ""}
-                  disabled
-                  className="w-full border p-2 rounded cursor-not-allowed"
+                  disabled={isQrPayment}
+                  onChange={(e) => handleChange("remitterName", e.target.value)}
+                  placeholder={
+                    isQrPayment
+                      ? "Auto-filled after QR payment"
+                      : "Enter remitter name"
+                  }
+                  className={`w-full border p-2 rounded ${
+                    isQrPayment ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+                  }`}
                 />
               </div>
 
@@ -417,12 +485,27 @@ const DetailConfirmation = () => {
                   className="w-full border p-2 rounded cursor-not-allowed"
                   onChange={(e) => handleChange(e.target.name, e.target.value)}
                 /> */}
+                {/* <input
+                  type="text"
+                  name="remarks"
+                  value={userData?.remarks || ""}
+                  disabled={isQrPayment}
+                  className="w-full border p-2 rounded cursor-not-allowed"
+                /> */}
                 <input
                   type="text"
                   name="remarks"
                   value={userData?.remarks || ""}
-                  disabled
-                  className="w-full border p-2 rounded cursor-not-allowed"
+                  disabled={isQrPayment}
+                  onChange={(e) => handleChange("remarks", e.target.value)}
+                  placeholder={
+                    isQrPayment
+                      ? "Auto-filled after QR payment"
+                      : "Enter remarks"
+                  }
+                  className={`w-full border p-2 rounded ${
+                    isQrPayment ? "bg-gray-100 cursor-not-allowed" : "bg-white"
+                  }`}
                 />
               </div>
             </div>
@@ -451,15 +534,24 @@ const DetailConfirmation = () => {
         <div className="flex justify-center gap-3 mt-4">
           <button
             type="submit"
-            onClick={handlePay}
+            // onClick={handlePay}
+            onClick={handleSubmit}
             // className="px-6 py-2 bg-green-600 text-white rounded cursor-not-allowed opacity-60"
             // disabled={loading}
             // disabled={true}
             // disabled={!qrPaymentSuccess}
-            disabled={loading || !qrPaymentSuccess}
+
+            // disabled={loading || !qrPaymentSuccess}
+            disabled={loading || !canSubmit}
+            // className={`px-6 py-2 text-white rounded ${
+            //   qrPaymentSuccess
+            //     ? "bg-green-600"
+            //     : "bg-green-600 opacity-60 cursor-not-allowed"
+            // }`}
+
             className={`px-6 py-2 text-white rounded ${
-              qrPaymentSuccess
-                ? "bg-green-600"
+              canSubmit
+                ? "bg-green-600 hover:bg-green-700"
                 : "bg-green-600 opacity-60 cursor-not-allowed"
             }`}
             // className="px-6 py-2 bg-green-600 text-white rounded"

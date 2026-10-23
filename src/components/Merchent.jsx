@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Table from "./Table";
 import { FaRegCopy } from "react-icons/fa";
@@ -7,20 +7,40 @@ import Service1 from "../images/logo.png";
 import Service2 from "../images/1.png";
 import Service3 from "../images/2.png";
 import Service4 from "../images/3.png";
-import { useCookies } from "react-cookie";
 import { useGet } from "../hooks/useGet";
+import { useAuth } from "../contexts/AuthContext";
 import TableSkeleton from "../components/TableSkeleton";
+
 const Merchent = () => {
   const navigate = useNavigate();
-  const [cookie] = useCookies();
-  const userId = cookie.user.id;
+  const { user } = useAuth();
 
-  const { loading: dataLoding, data: merchantsData } = useGet(
-    // `/reports/user/${userId}`
-    `/bbps/user-bill-payments/json/${userId}`
+  const { loading: dashboardLoading, data: dashboardData } = useGet(
+    "/merchant/dashboard",
   );
 
+  const wallet = dashboardData?.wallet;
+  const kyc = dashboardData?.kyc;
+  const permissions = dashboardData?.permissions;
+
+  // const { loading: dataLoding, data: merchantsData } = useGet(
+  //   // `/reports/user/${userId}`
+  //   `/bbps/user-bill-payments/json/${userId}`,
+  // );
+
+  const { loading: dataLoading, data: merchantsData } = useGet(
+    "/bbps/user-bill-payments/json",
+  );
+
+  // const handelServiceClick = () => {
+  //   navigate("/services");
+  // };
+
   const handelServiceClick = () => {
+    if (!permissions?.bbps) {
+      return;
+    }
+
     navigate("/services");
   };
 
@@ -85,7 +105,7 @@ const Merchent = () => {
       category: item.biller_category,
       mobile_no: item.mobile,
       respAmount: item.amount,
-       txnStatus: mapTxnStatus(item.txnStatus),
+      txnStatus: mapTxnStatus(item.txnStatus),
       responseReason: item.description,
       payout_opening_balance: item.payout_opening_balance,
       payout_closing_balance: item.payout_closing_balance,
@@ -103,9 +123,7 @@ const Merchent = () => {
     {
       label: "Status",
       key: "txnStatus",
-       render: (item) =>
-    renderStatusLabel(mapTxnStatus(item.txnStatus)),
-
+      render: (item) => renderStatusLabel(mapTxnStatus(item.txnStatus)),
     },
 
     {
@@ -116,6 +134,10 @@ const Merchent = () => {
 
     // {label:"NONE",key:"trikj"}
   ];
+
+  if (dashboardLoading) {
+    return <TableSkeleton />;
+  }
 
   return (
     <span>
@@ -130,7 +152,7 @@ const Merchent = () => {
           </h3>
 
           <h2 className="text-2xl font-bold text-blue-700 mb-4">
-            ₹{cookie.user.merchant_bbps_wallet}
+            ₹{wallet?.bbps_wallet}
           </h2>
 
           <div className="flex items-center justify-center gap-2 mb-1">
@@ -160,7 +182,7 @@ const Merchent = () => {
         <div className="flex-shrink-0 w-full md:w-1/3 bg-white rounded-2xl shadow-md overflow-hidden border border-blue-200 hover:shadow-lg hover:-translate-y-1 transform transition-all duration-300">
           <div className="text-white text-center py-5 px-6 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-b-[35%]">
             <h2 className="text-lg font-semibold mb-1">
-              Welcome, {cookie.user.name}
+              Welcome, {user?.name}
             </h2>
             <p className="text-sm opacity-90">Your personalized dashboard</p>
           </div>
@@ -168,11 +190,11 @@ const Merchent = () => {
           <div className="p-6 bg-gray-50 flex flex-col justify-center">
             <p className="mb-2">
               <span className="font-semibold text-gray-800">User Name:</span>{" "}
-              <span className="text-gray-700">{cookie.user.name}</span>
+              <span className="text-gray-700">{user?.name}</span>
             </p>
             <p className="mb-2">
               <span className="font-semibold text-gray-800">Email:</span>{" "}
-              <span className="text-gray-700">{cookie.user.email}</span>
+              <span className="text-gray-700">{user?.email}</span>
             </p>
             <p className="mb-2">
               <span className="font-semibold text-gray-800">Entity Type:</span>{" "}
@@ -180,7 +202,7 @@ const Merchent = () => {
             </p>
             <p>
               <span className="font-semibold text-gray-800">Contact:</span>{" "}
-              <span className="text-gray-700">{cookie.user.mobile_no}</span>
+              <span className="text-gray-700">{user?.mobile_no}</span>
             </p>
           </div>
         </div>
@@ -194,7 +216,12 @@ const Merchent = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div
-              className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-green-200 transition-all shadow-sm hover:shadow-lg hover:-translate-y-1 transform duration-300 cursor-pointer"
+              className={`flex flex-col items-center p-4 rounded-lg transition-all shadow-sm duration-300
+              ${
+                permissions?.bbps
+                  ? "bg-blue-50 hover:bg-green-200 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+                  : "bg-gray-100 opacity-60 cursor-not-allowed"
+              }`}
               onClick={handelServiceClick}
             >
               <img src={Service1} className="w-10 h-10 mb-2" />
@@ -236,7 +263,7 @@ const Merchent = () => {
         <h2 className="text-lg font-semibold text-gray-800 mb-2 border-b pb-2">
           Latest Transaction List
         </h2>
-        {dataLoding ? (
+        {dataLoading ? (
           <TableSkeleton />
         ) : (
           <Table

@@ -57,7 +57,7 @@ const MetroBillForm = () => {
 
       // Backend API Call
       const response = await axios.post(
-        "https://dashboardbbps.spay.live/backend/api/ntt/payin",
+        "https://dashboardbbps.spay.live/api/ntt/payin",
         formData,
       );
 
@@ -71,7 +71,7 @@ const MetroBillForm = () => {
         merchId: response.data.merchId,
         custEmail: formData.email,
         custMobile: formData.mobile,
-        returnUrl: "https://dashboardbbps.spay.live/backend/api/ntt/callback",
+        returnUrl: "https://dashboardbbps.spay.live/api/ntt/callback",
       };
 
       new window.AtomPaynetz(options, "uat");

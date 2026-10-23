@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const NonePage = () => {
   return (
@@ -12,29 +13,39 @@ const NonePage = () => {
 
 const RedirectGuard = ({ children, requiredRole = null }) => {
   const navigate = useNavigate();
-  const [cookie] = useCookies(["token", "role"]);
+  const { user, loading, logout } = useAuth();
+  const [cookie] = useCookies(["token"]);
   const [showNone, setShowNone] = useState(false);
 
   useEffect(() => {
-    const token = cookie.token;
-    const role = cookie.role;
+    if (loading) return;
 
-    // Invalid or missing login → show NonePage then redirect
-    if (!token || !role) {
+    const token = cookie.token;
+
+    if (!token || !user) {
+      logout();
       setShowNone(true);
-      setTimeout(() => navigate("/"), 1500);
-      return;
+
+      const timer = setTimeout(() => navigate("/"), 1500);
+      return () => clearTimeout(timer);
     }
 
-    // Role Check
-    if (requiredRole !== null && Number(role) !== Number(requiredRole)) {
+    if (
+      requiredRole !== null &&
+      Number(user?.role?.id) !== Number(requiredRole)
+    ) {
       setShowNone(true);
-      setTimeout(() => navigate("/"), 1500);
-      return;
+
+      const timer = setTimeout(() => navigate("/"), 1500);
+      return () => clearTimeout(timer);
     }
 
     setShowNone(false);
-  }, [cookie, requiredRole, navigate]);
+  }, [cookie.token, user, loading, requiredRole, navigate]);
+
+  if (loading) {
+    return null;
+  }
 
   // Unauthorized → show message
   if (showNone) return <NonePage />;
