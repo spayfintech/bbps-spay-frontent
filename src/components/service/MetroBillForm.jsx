@@ -4,9 +4,55 @@ import { ServicesModalWrapper } from "../ServicesModalWrapper";
 import { useModal } from "../../contexts/ServicesModalContext";
 import placeholderImg from "../../images/Spaylogo.png";
 
+let atomScriptPromise = null;
+
+const loadAtomScript = () => {
+  if (typeof window.AtomPaynetz === "function") {
+    return Promise.resolve();
+  }
+
+  if (atomScriptPromise) {
+    return atomScriptPromise;
+  }
+
+  atomScriptPromise = new Promise((resolve, reject) => {
+    let script = document.getElementById("atom-script");
+
+    const handleLoad = () => {
+      if (typeof window.AtomPaynetz === "function") {
+        resolve();
+      } else {
+        reject(new Error("Atom checkout script loaded, but AtomPaynetz is unavailable."));
+      }
+    };
+
+    const handleError = () => {
+      script?.remove();
+      reject(new Error("Failed to load the Atom checkout script."));
+    };
+
+    if (!script) {
+      script = document.createElement("script");
+      script.src =
+        "https://pgtest.atomtech.in/staticdata/ots/js/atomcheckout.js";
+      script.id = "atom-script";
+      script.addEventListener("load", handleLoad, { once: true });
+      script.addEventListener("error", handleError, { once: true });
+      document.body.appendChild(script);
+    } else {
+      script.addEventListener("load", handleLoad, { once: true });
+      script.addEventListener("error", handleError, { once: true });
+    }
+  }).catch((error) => {
+    atomScriptPromise = null;
+    throw error;
+  });
+
+  return atomScriptPromise;
+};
+
 const MetroBillForm = () => {
   const { isModalOpen, closeModal } = useModal();
-
   const isOpen = isModalOpen("serviceSelecter");
 
   const [loading, setLoading] = useState(false);
@@ -18,44 +64,21 @@ const MetroBillForm = () => {
     mobile: "",
   });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleChange = (event) => {
+    const { name, value } = event.target;
 
-  const loadAtomScript = () => {
-    return new Promise((resolve) => {
-      const existingScript = document.getElementById("atom-script");
-
-      if (!existingScript) {
-        const script = document.createElement("script");
-
-        script.src =
-          "https://pgtest.atomtech.in/staticdata/ots/js/atomcheckout.js";
-
-        script.id = "atom-script";
-
-        script.onload = () => {
-          resolve(true);
-        };
-
-        document.body.appendChild(script);
-      } else {
-        resolve(true);
-      }
-    });
+    setFormData((previousData) => ({
+      ...previousData,
+      [name]: value,
+    }));
   };
 
   const startPayment = async () => {
     try {
       setLoading(true);
 
-      // Load Atom SDK
       await loadAtomScript();
 
-      // Backend API Call
       const response = await axios.post(
         "https://dashboardbbps.spay.live/api/ntt/payin",
         formData,
@@ -77,7 +100,6 @@ const MetroBillForm = () => {
       new window.AtomPaynetz(options, "uat");
     } catch (error) {
       console.error(error);
-
       alert("Payment failed");
     } finally {
       setLoading(false);
