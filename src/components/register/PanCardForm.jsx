@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePost } from "../../hooks/usePost";
 
 import {
@@ -7,19 +7,73 @@ import {
   ShieldCheck,
   AlertTriangle,
 } from "lucide-react";
+
 import { toast } from "react-toastify";
 
-const PanCardForm = ({ onBack, onSubmit }) => {
+const PanCardForm = ({ onBack, onSubmit, initialData }) => {
   const [agreement, setAgreement] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [declaration, setDeclaration] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  //--------
+  /* -------------------------------------------------------------------------- */
+  /* RESTORE DECLARATIONS                                                       */
+  /* -------------------------------------------------------------------------- */
+
+  useEffect(() => {
+    try {
+      const stored = sessionStorage.getItem("merchant_onboarding_data");
+
+      const data =
+        (initialData && Object.keys(initialData).length > 0
+          ? initialData
+          : null) || (stored ? JSON.parse(stored) : null);
+
+      if (!data) return;
+
+      if (data?.agreement === true) setAgreement(true);
+      if (data?.privacy === true) setPrivacy(true);
+      if (data?.declaration === true) setDeclaration(true);
+    } catch (error) {
+      console.error("Unable to restore merchant declarations:", error);
+    }
+  }, [initialData]);
+
+  /* -------------------------------------------------------------------------- */
+  /* API                                                                        */
+  /* -------------------------------------------------------------------------- */
 
   const { execute: submitMerchant } = usePost("/merchant-onboarding/submit");
 
-  //--------
+  /* -------------------------------------------------------------------------- */
+  /* BACK                                                                       */
+  /* -------------------------------------------------------------------------- */
+
+  const handleBack = () => {
+    try {
+      const existingData = JSON.parse(
+        sessionStorage.getItem("merchant_onboarding_data") || "{}",
+      );
+
+      sessionStorage.setItem(
+        "merchant_onboarding_data",
+        JSON.stringify({
+          ...existingData,
+          agreement,
+          privacy,
+          declaration,
+        }),
+      );
+    } catch (error) {
+      console.error("Unable to save declarations locally:", error);
+    }
+
+    if (typeof onBack === "function") onBack();
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /* SUBMIT                                                                     */
+  /* -------------------------------------------------------------------------- */
 
   const handleSubmit = async () => {
     if (!agreement || !privacy || !declaration) {
@@ -43,6 +97,8 @@ const PanCardForm = ({ onBack, onSubmit }) => {
       if (res?.status === "success" || res?.success) {
         sessionStorage.removeItem("merchant_onboarding_id");
 
+        if (typeof onSubmit === "function") onSubmit(res);
+
         setShowSuccessModal(true);
       } else {
         toast.error(res?.message || "Unable to submit registration.");
@@ -63,7 +119,6 @@ const PanCardForm = ({ onBack, onSubmit }) => {
 
       <div className="space-y-6">
         {/* Agreement Card */}
-
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#155DFC]/10">
@@ -144,7 +199,6 @@ const PanCardForm = ({ onBack, onSubmit }) => {
         </div>
 
         {/* Declaration */}
-
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-5">
             <AlertTriangle className="text-amber-500" size={22} />
@@ -215,7 +269,6 @@ const PanCardForm = ({ onBack, onSubmit }) => {
         </div>
 
         {/* Summary */}
-
         <div className="rounded-2xl border border-green-200 bg-green-50 p-6 shadow-sm">
           <div className="flex items-start gap-3">
             <CheckCircle className="mt-0.5 text-green-600" size={22} />
@@ -236,17 +289,27 @@ const PanCardForm = ({ onBack, onSubmit }) => {
         </div>
 
         {/* Button */}
+        <div className="flex items-center justify-between gap-4 pt-2">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="h-11 rounded-xl border border-slate-300 px-8 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          >
+            Back
+          </button>
 
-        <div className="flex justify-end pt-2">
           <button
             type="button"
             onClick={handleSubmit}
-            className="flex h-11 items-center justify-center rounded-xl bg-green-600 px-8 text-sm font-medium text-white transition hover:bg-green-700 cursor-pointer"
+            disabled={!agreement || !privacy || !declaration}
+            className="flex h-11 items-center justify-center rounded-xl bg-green-600 px-8 text-sm font-medium text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-green-300"
           >
             Complete Registration
           </button>
         </div>
       </div>
+
+      {/* SUCCESS MODAL */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
@@ -282,7 +345,7 @@ const PanCardForm = ({ onBack, onSubmit }) => {
             <button
               onClick={() => {
                 sessionStorage.removeItem("merchant_onboarding_id");
-                window.location.href = "https://services.spay.live/";
+                window.location.href = "/";
               }}
               className="mt-8 h-11 w-full rounded-xl bg-[#155DFC] text-white font-medium transition hover:bg-blue-700 cursor-pointer"
             >
